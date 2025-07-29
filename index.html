@@ -93,16 +93,16 @@
         
         .sparkle {
             position: absolute;
-            width: 15px;
-            height: 15px;
-            background: white;
-            border-radius: 50%;
+            font-size: 24px;
             pointer-events: none;
-            opacity: 0;
-            box-shadow: 0 0 15px 8px rgba(255,255,255,0.8);
-            transform: scale(0);
-            transition: all 0.5s;
             z-index: 5;
+            animation: floatUp 2s ease-out forwards;
+        }
+        
+        @keyframes floatUp {
+            0% { transform: translateY(0) scale(0.5); opacity: 0; }
+            50% { transform: translateY(-20px) scale(1); opacity: 1; }
+            100% { transform: translateY(-40px) scale(0); opacity: 0; }
         }
         
         .confetti {
@@ -112,6 +112,11 @@
             background-color: #f00;
             opacity: 0;
             z-index: 5;
+            animation: fall 3s linear forwards;
+        }
+        
+        @keyframes fall {
+            to { transform: translateY(100vh) rotate(360deg); opacity: 1; }
         }
         
         .big-pop {
@@ -120,10 +125,16 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 70%);
-            opacity: 0;
+            background: rgba(255, 255, 255, 0.8);
             z-index: 8;
-            pointer-events: none;
+            opacity: 0;
+            animation: flash 0.5s ease-out;
+        }
+        
+        @keyframes flash {
+            0% { opacity: 0; }
+            50% { opacity: 1; }
+            100% { opacity: 0; }
         }
         
         .music-control {
@@ -180,6 +191,7 @@
                 bgMusic.play()
                     .then(() => {
                         musicControl.textContent = '♫';
+                        alert("Music started! Now tap the 'I Love You' button ❤️");
                     })
                     .catch(e => {
                         console.error("Audio error:", e);
@@ -193,14 +205,9 @@
         
         // Button click handler
         loveButton.addEventListener('click', function() {
-            // First try to play music if not playing
-            if (bgMusic.paused) {
-                bgMusic.play().catch(e => console.log("Audio play failed:", e));
-            }
-            
             // Increase click count and size
             clickCount += 10;
-            currentSize = 1 + (clickCount * 0.04); // 4% growth per click
+            currentSize = 1 + (clickCount * 0.05); // 5% growth per click
             
             // Update button text and size
             if (clickCount < 100) {
@@ -212,8 +219,8 @@
             // Apply size with animation
             loveButton.style.transform = `scale(${currentSize})`;
             
-            // Create sparkle effects
-            createSparkles(10); // 10 sparkles per click
+            // Create sparkle effects (✨ emoji)
+            createSparkles(8); // 8 sparkles per click
             
             // If reached infinity, trigger final effects
             if (clickCount >= 100) {
@@ -226,23 +233,17 @@
                 setTimeout(() => {
                     const sparkle = document.createElement('div');
                     sparkle.classList.add('sparkle');
+                    sparkle.textContent = '✨';
                     
                     // Position around the button
                     const rect = loveButton.getBoundingClientRect();
                     sparkle.style.left = `${rect.left + 20 + Math.random() * (rect.width - 40)}px`;
-                    sparkle.style.top = `${rect.top + 10 + Math.random() * (rect.height - 20)}px`;
+                    sparkle.style.top = `${rect.top + Math.random() * rect.height}px`;
                     
                     document.body.appendChild(sparkle);
                     
-                    // Animate sparkle
-                    setTimeout(() => {
-                        sparkle.style.opacity = '1';
-                        sparkle.style.transform = 'scale(2)';
-                        setTimeout(() => {
-                            sparkle.style.opacity = '0';
-                            setTimeout(() => sparkle.remove(), 1000);
-                        }, 300);
-                    }, 10);
+                    // Remove after animation
+                    setTimeout(() => sparkle.remove(), 2000);
                 }, i * 100);
             }
         }
@@ -253,16 +254,11 @@
             pop.classList.add('big-pop');
             document.body.appendChild(pop);
             
-            setTimeout(() => {
-                pop.style.opacity = '1';
-                setTimeout(() => {
-                    pop.style.opacity = '0';
-                    setTimeout(() => pop.remove(), 1000);
-                }, 300);
-            }, 10);
+            // Remove flash after animation
+            setTimeout(() => pop.remove(), 500);
             
             // Confetti explosion
-            createConfetti(200); // 200 pieces
+            createConfetti(150); // 150 pieces
             
             // Fade out everything
             setTimeout(() => {
@@ -300,16 +296,15 @@
                 
                 document.body.appendChild(confetti);
                 
-                // Animate falling
+                // Start falling animation
                 setTimeout(() => {
                     confetti.style.opacity = '1';
-                    confetti.style.top = `${window.innerHeight + 30}px`;
-                    confetti.style.transition = `top ${3 + Math.random() * 3}s cubic-bezier(0.1, 0.8, 0.3, 1)`;
-                    
-                    setTimeout(() => confetti.remove(), 6000);
                 }, Math.random() * 1000);
+                
+                // Remove after animation
+                setTimeout(() => confetti.remove(), 4000);
             }
         }
     </script>
 </body>
-    </html>
+</html>
