@@ -142,6 +142,7 @@
             align-items: center;
             box-shadow: 0 2px 10px rgba(0,0,0,0.2);
             cursor: pointer;
+            font-size: 20px;
         }
     </style>
 </head>
@@ -159,12 +160,12 @@
     
     <audio id="bgMusic" loop>
         <source src="the-ronettes-be-my-baby.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
     </audio>
     
     <div class="music-control" id="musicControl">♪</div>
 
     <script>
+        // Initialize variables
         let clickCount = 0;
         const loveButton = document.getElementById('loveButton');
         const finalGif = document.getElementById('finalGif');
@@ -173,52 +174,58 @@
         const container = document.querySelector('.container');
         let musicStarted = false;
         
+        // Initialize button size tracking
+        let currentButtonSize = 1;
+        
         // Music control button
         musicControl.addEventListener('click', function() {
             if (bgMusic.paused) {
-                bgMusic.play();
-                musicControl.textContent = '♫';
+                bgMusic.play()
+                    .then(() => {
+                        musicControl.textContent = '♫';
+                        musicStarted = true;
+                    })
+                    .catch(e => {
+                        console.log("Audio play failed:", e);
+                        alert("Please allow audio to play by tapping the music note first");
+                    });
             } else {
                 bgMusic.pause();
                 musicControl.textContent = '♪';
             }
         });
         
-        // Start music on first interaction
-        document.body.addEventListener('click', function initMusic() {
-            if (!musicStarted) {
-                bgMusic.play().then(() => {
-                    musicStarted = true;
-                    musicControl.textContent = '♫';
-                }).catch(e => {
-                    console.log("Audio play failed:", e);
-                    musicControl.style.display = 'flex'; // Show control if autoplay fails
-                });
-                document.body.removeEventListener('click', initMusic);
-            }
-        });
-        
+        // Start music on first button click if not started
         loveButton.addEventListener('click', function() {
-            // Button press animation
-            this.style.transform = 'scale(0.95)';
-            setTimeout(() => {
-                this.style.transform = `scale(${1 + clickCount*0.02})`;
-            }, 100);
+            if (!musicStarted) {
+                bgMusic.play()
+                    .then(() => {
+                        musicControl.textContent = '♫';
+                        musicStarted = true;
+                    })
+                    .catch(e => {
+                        console.log("Audio play failed:", e);
+                        musicControl.style.display = 'flex';
+                    });
+            }
             
+            // Button press animation
+            this.style.transform = `scale(${currentButtonSize * 0.95})`;
+            
+            // Increment counter and calculate new size
             clickCount += 10;
-            const newSize = 1 + (clickCount * 0.02);
+            currentButtonSize = 1 + (clickCount * 0.02);
             
             // Create multiple sparkles
-            for(let i = 0; i < 5; i++) {
+            for(let i = 0; i < 8; i++) {
                 setTimeout(() => createSparkle(), i * 100);
             }
             
+            // Update button text and size
             if (clickCount < 100) {
                 this.textContent = `I Love You ${clickCount}x`;
-                this.style.transform = `scale(${newSize})`;
             } else {
                 this.textContent = `I Love You ♾️`;
-                this.style.transform = `scale(${newSize})`;
                 
                 // Create big pop effect
                 const pop = document.createElement('div');
@@ -246,6 +253,11 @@
                     }, 1000);
                 }, 1500);
             }
+            
+            // Apply size change after slight delay
+            setTimeout(() => {
+                this.style.transform = `scale(${currentButtonSize})`;
+            }, 100);
         });
         
         function createSparkle() {
@@ -289,4 +301,37 @@
                 const shape = shapes[Math.floor(Math.random() * shapes.length)];
                 
                 confetti.style.width = `${size}px`;
-                confetti.style.height = `${siz
+                confetti.style.height = `${size}px`;
+                confetti.style.backgroundColor = color;
+                confetti.style.left = `${Math.random() * 100}vw`;
+                
+                if (shape === 'circle') {
+                    confetti.style.borderRadius = '50%';
+                } else if (shape === 'triangle') {
+                    confetti.style.width = '0';
+                    confetti.style.height = '0';
+                    confetti.style.borderLeft = `${size/2}px solid transparent`;
+                    confetti.style.borderRight = `${size/2}px solid transparent`;
+                    confetti.style.borderBottom = `${size}px solid ${color}`;
+                    confetti.style.backgroundColor = 'transparent';
+                }
+                
+                document.body.appendChild(confetti);
+                
+                // Random delay for falling
+                const delay = Math.random() * 1000;
+                
+                setTimeout(() => {
+                    confetti.style.opacity = '1';
+                    confetti.style.transform = `translateY(${window.innerHeight + 20}px) rotate(${Math.random() * 360}deg)`;
+                    confetti.style.transition = `all ${3 + Math.random() * 2}s cubic-bezier(0.1, 0.8, 0.3, 1)`;
+                    
+                    setTimeout(() => {
+                        confetti.remove();
+                    }, 5000);
+                }, delay);
+            }
+        }
+    </script>
+</body>
+    </html>
