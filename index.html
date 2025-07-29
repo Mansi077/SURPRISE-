@@ -20,7 +20,7 @@
         }
         
         .top-gif {
-            width: 200px;
+            width: 250px;
             margin-bottom: 30px;
             border-radius: 15px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
@@ -158,90 +158,80 @@
             cursor: pointer;
             font-size: 24px;
             color: #ff6b6b;
+            transition: all 0.3s;
         }
         
-        /* New Music Overlay Styles */
-        .music-overlay {
+        .music-control.playing {
+            background: #ff6b6b;
+            color: white;
+            box-shadow: 0 0 20px rgba(255, 107, 107, 0.7);
+            transform: scale(1.1);
+        }
+        
+        /* New Music Status Indicator */
+        .music-status {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            color: white;
-            text-align: center;
-            padding: 20px;
-        }
-        
-        .music-overlay h2 {
-            font-size: 2.5rem;
-            margin-bottom: 20px;
-            color: #ff6b6b;
-        }
-        
-        .music-overlay p {
-            font-size: 1.3rem;
-            max-width: 600px;
-            margin-bottom: 30px;
-            line-height: 1.6;
-        }
-        
-        .play-btn {
-            background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
-            color: white;
-            border: none;
-            padding: 20px 50px;
-            font-size: 24px;
-            border-radius: 50px;
-            cursor: pointer;
-            font-weight: bold;
-            box-shadow: 0 6px 20px rgba(255,107,107,0.5);
-            transition: transform 0.3s;
-        }
-        
-        .play-btn:hover {
-            transform: scale(1.05);
-        }
-        
-        .hidden {
-            display: none;
-        }
-        
-        /* Floating hearts */
-        .hearts {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 1;
-        }
-        
-        .heart {
-            position: absolute;
-            font-size: 24px;
-            color: #ff6b6b;
-            animation: float 5s ease-in-out infinite;
+            bottom: 90px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px 15px;
+            border-radius: 25px;
+            font-size: 14px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 99;
             opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s;
         }
         
-        @keyframes float {
-            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+        .music-status.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .music-status.error {
+            background: #ff6b6b;
+            color: white;
+        }
+        
+        /* Audio Waves Animation */
+        .audio-waves {
+            position: fixed;
+            bottom: 90px;
+            right: 80px;
+            display: flex;
+            align-items: flex-end;
+            height: 40px;
+            gap: 3px;
+            z-index: 99;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .audio-waves.show {
+            opacity: 1;
+        }
+        
+        .wave {
+            width: 4px;
+            background: #ff6b6b;
+            border-radius: 2px;
+            animation: wave 1.2s infinite ease-in-out;
+        }
+        
+        .wave:nth-child(2) { animation-delay: 0.1s; height: 20px; }
+        .wave:nth-child(3) { animation-delay: 0.2s; height: 30px; }
+        .wave:nth-child(4) { animation-delay: 0.3s; height: 25px; }
+        .wave:nth-child(5) { animation-delay: 0.4s; height: 35px; }
+        .wave:nth-child(6) { animation-delay: 0.5s; height: 20px; }
+        
+        @keyframes wave {
+            0%, 100% { transform: scaleY(0.6); }
+            50% { transform: scaleY(1.2); }
         }
     </style>
 </head>
 <body>
-    <div class="hearts" id="heartsContainer"></div>
-    
     <img src="711f384dff486fdbad35cdf258188b2feafaaad6.gif" class="top-gif" alt="Cute GIF">
     
     <div class="container">
@@ -253,12 +243,21 @@
         <div class="final-caption">I love you so much baby ♾️</div>
     </div>
     
+    <audio id="bgMusic">
+        <source src="the-ronettes-be-my-baby.mp3" type="audio/mpeg">
+    </audio>
+    
     <div class="music-control" id="musicControl">♪</div>
     
-    <div class="music-overlay" id="musicOverlay">
-        <h2>Music Required!</h2>
-        <p>To enjoy the romantic experience with background music, please tap the button below to enable audio playback. Some browsers require this step for security reasons.</p>
-        <button class="play-btn" id="playBtn">ENABLE MUSIC</button>
+    <div class="music-status" id="musicStatus">Tap to enable music</div>
+    
+    <div class="audio-waves" id="audioWaves">
+        <div class="wave"></div>
+        <div class="wave"></div>
+        <div class="wave"></div>
+        <div class="wave"></div>
+        <div class="wave"></div>
+        <div class="wave"></div>
     </div>
 
     <script>
@@ -266,86 +265,55 @@
         let clickCount = 0;
         const loveButton = document.getElementById('loveButton');
         const finalGif = document.getElementById('finalGif');
+        const bgMusic = document.getElementById('bgMusic');
         const musicControl = document.getElementById('musicControl');
-        const musicOverlay = document.getElementById('musicOverlay');
-        const playBtn = document.getElementById('playBtn');
-        const heartsContainer = document.getElementById('heartsContainer');
+        const musicStatus = document.getElementById('musicStatus');
+        const audioWaves = document.getElementById('audioWaves');
         
         // Set initial scale
         let currentScale = 1;
         loveButton.style.setProperty('--btn-scale', currentScale);
         
-        // Create audio context
-        const AudioContext = window.AudioContext || window.webkitAudioContext;
-        const audioContext = new AudioContext();
-        let audioBuffer = null;
-        let audioSource = null;
+        // Track if music is playing
         let isPlaying = false;
-        
-        // Load audio file
-        async function loadAudio() {
-            try {
-                const response = await fetch('the-ronettes-be-my-baby.mp3');
-                const arrayBuffer = await response.arrayBuffer();
-                audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-                console.log("Audio loaded successfully!");
-            } catch (e) {
-                console.error("Error loading audio:", e);
-                musicOverlay.querySelector('p').textContent = "Couldn't load audio file. Please ensure the file exists and try again.";
-            }
-        }
-        
-        // Play audio function
-        function playAudio() {
-            if (audioBuffer && audioContext.state !== 'closed') {
-                if (audioSource) {
-                    audioSource.stop();
-                }
-                
-                audioSource = audioContext.createBufferSource();
-                audioSource.buffer = audioBuffer;
-                audioSource.connect(audioContext.destination);
-                audioSource.loop = true;
-                audioSource.start();
-                musicControl.textContent = '♫';
-                musicOverlay.classList.add('hidden');
-                isPlaying = true;
-                
-                // Create floating hearts
-                createHearts();
-            }
-        }
         
         // Music control button
         musicControl.addEventListener('click', function() {
             if (isPlaying) {
-                if (audioSource) {
-                    audioSource.stop();
-                    audioSource = null;
-                }
+                // Pause music
+                bgMusic.pause();
                 musicControl.textContent = '♪';
+                musicControl.classList.remove('playing');
+                audioWaves.classList.remove('show');
                 isPlaying = false;
+                showStatus("Music paused");
             } else {
-                if (audioContext.state === 'suspended') {
-                    audioContext.resume().then(() => {
-                        playAudio();
+                // Play music
+                bgMusic.play()
+                    .then(() => {
+                        musicControl.textContent = '♫';
+                        musicControl.classList.add('playing');
+                        audioWaves.classList.add('show');
+                        isPlaying = true;
+                        showStatus("Music playing!");
+                    })
+                    .catch(error => {
+                        console.error("Audio error:", error);
+                        showStatus("Error: Could not play music", true);
                     });
-                } else {
-                    playAudio();
-                }
             }
         });
         
-        // Play button in overlay
-        playBtn.addEventListener('click', function() {
-            if (audioContext.state === 'suspended') {
-                audioContext.resume().then(() => {
-                    playAudio();
-                });
-            } else {
-                playAudio();
-            }
-        });
+        // Show music status message
+        function showStatus(message, isError = false) {
+            musicStatus.textContent = message;
+            musicStatus.classList.toggle('error', isError);
+            musicStatus.classList.add('show');
+            
+            setTimeout(() => {
+                musicStatus.classList.remove('show');
+            }, 3000);
+        }
         
         // Button click handler
         loveButton.addEventListener('click', function() {
@@ -370,11 +338,6 @@
             // If reached infinity, trigger final effects
             if (clickCount >= 100) {
                 triggerFinalEffects();
-            }
-            
-            // Create floating hearts if music is playing
-            if (isPlaying) {
-                createHearts();
             }
         });
         
@@ -470,35 +433,10 @@
             }
         }
         
-        // Create floating hearts
-        function createHearts() {
-            for (let i = 0; i < 5; i++) {
-                const heart = document.createElement('div');
-                heart.classList.add('heart');
-                heart.innerHTML = '❤️';
-                heart.style.left = `${Math.random() * 100}vw`;
-                heart.style.fontSize = `${20 + Math.random() * 30}px`;
-                heart.style.animationDuration = `${3 + Math.random() * 5}s`;
-                heart.style.animationDelay = `${Math.random() * 2}s`;
-                
-                heartsContainer.appendChild(heart);
-                
-                // Remove after animation completes
-                setTimeout(() => {
-                    heart.remove();
-                }, 8000);
-            }
-        }
-        
-        // Initialize audio when page loads
-        window.addEventListener('load', async () => {
-            await loadAudio();
-            
-            // Check if audio is already playable
-            if (audioContext.state !== 'running') {
-                musicOverlay.classList.remove('hidden');
-            }
-        });
+        // Show initial status message
+        setTimeout(() => {
+            showStatus("Tap the music note to play background music");
+        }, 1000);
     </script>
 </body>
-</html>
+    </html>
