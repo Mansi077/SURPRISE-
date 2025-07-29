@@ -17,7 +17,7 @@
         }
         
         .top-gif {
-            width: 200px;
+            width: 250px; /* Increased size */
             margin-bottom: 30px;
             border-radius: 15px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
@@ -28,7 +28,7 @@
             text-align: center;
             position: relative;
             transition: all 1s;
-            z-index: 1; /* Ensures button stays below sparkles */
+            z-index: 1;
         }
         
         .love-button {
@@ -42,7 +42,7 @@
             box-shadow: 0 6px 20px rgba(255,107,107,0.5);
             font-weight: bold;
             position: relative;
-            z-index: 1; /* Button stays below sparkles */
+            z-index: 1;
             margin-top: 20px;
             animation: pulse 1.5s infinite;
             transform: scale(1);
@@ -72,8 +72,8 @@
         }
         
         .final-gif img {
-            max-width: 90%;
-            max-height: 60%;
+            max-width: 95%; /* Larger GIF */
+            max-height: 70%; /* Larger GIF */
             border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
@@ -97,7 +97,7 @@
             position: absolute;
             font-size: 24px;
             pointer-events: none;
-            z-index: 5; /* Sparkles appear above button */
+            z-index: 5;
             animation: floatUp 2s ease-out forwards;
         }
         
@@ -113,8 +113,8 @@
             height: 15px;
             background-color: #f00;
             opacity: 0;
-            z-index: 5; /* Confetti appears above button */
-            animation: fall 3s linear forwards;
+            z-index: 5;
+            animation: fall linear forwards;
         }
         
         @keyframes fall {
@@ -128,7 +128,7 @@
             width: 100%;
             height: 100%;
             background: rgba(255, 255, 255, 0.8);
-            z-index: 8; /* Flash appears above everything */
+            z-index: 8;
             opacity: 0;
             animation: flash 0.5s ease-out;
         }
@@ -143,7 +143,7 @@
             position: fixed;
             bottom: 20px;
             right: 20px;
-            z-index: 100; /* Music control always on top */
+            z-index: 100;
             background: white;
             border-radius: 50%;
             width: 50px;
@@ -194,7 +194,6 @@
                 bgMusic.play()
                     .then(() => {
                         musicControl.textContent = '♫';
-                        alert("Music started! Now tap the 'I Love You' button ❤️");
                     })
                     .catch(e => {
                         console.error("Audio error:", e);
@@ -210,7 +209,7 @@
         loveButton.addEventListener('click', function() {
             // Increase click count and scale
             clickCount += 10;
-            currentScale = 1 + (clickCount * 0.05); // 5% growth per click
+            currentScale = 1 + (clickCount * 0.05);
             
             // Update button scale
             loveButton.style.setProperty('--btn-scale', currentScale);
@@ -223,8 +222,8 @@
                 loveButton.textContent = `I Love You ♾️`;
             }
             
-            // Create sparkle effects (✨ emoji)
-            createSparkles(8); // 8 sparkles per click
+            // Create sparkle effects
+            createSparkles(8);
             
             // If reached infinity, trigger final effects
             if (clickCount >= 100) {
@@ -239,14 +238,12 @@
                     sparkle.classList.add('sparkle');
                     sparkle.textContent = '✨';
                     
-                    // Position around the button (but above it)
                     const rect = loveButton.getBoundingClientRect();
                     sparkle.style.left = `${rect.left + 20 + Math.random() * (rect.width - 40)}px`;
                     sparkle.style.top = `${rect.top + Math.random() * rect.height}px`;
                     
                     document.body.appendChild(sparkle);
                     
-                    // Remove after animation
                     setTimeout(() => sparkle.remove(), 2000);
                 }, i * 100);
             }
@@ -258,11 +255,10 @@
             pop.classList.add('big-pop');
             document.body.appendChild(pop);
             
-            // Remove flash after animation
             setTimeout(() => pop.remove(), 500);
             
-            // Confetti explosion
-            createConfetti(150); // 150 pieces
+            // Improved confetti distribution
+            createConfetti(200); // More confetti, better spread
             
             // Fade out everything
             setTimeout(() => {
@@ -281,34 +277,51 @@
         
         function createConfetti(count) {
             const colors = ['#ff6b6b', '#ffb8b8', '#ffdd59', '#7bed9f', '#70a1ff', '#ff9ff3'];
+            const shapes = ['circle', 'square', 'triangle'];
+            
+            // Calculate columns for even distribution
+            const columns = 10;
+            const colWidth = window.innerWidth / columns;
             
             for (let i = 0; i < count; i++) {
                 const confetti = document.createElement('div');
                 confetti.classList.add('confetti');
                 
-                // Random properties
+                // Distribute evenly across columns
+                const col = i % columns;
+                const xPos = col * colWidth + Math.random() * colWidth;
+                
                 const size = 8 + Math.random() * 12;
                 const color = colors[Math.floor(Math.random() * colors.length)];
+                const shape = shapes[Math.floor(Math.random() * shapes.length)];
                 
                 confetti.style.width = `${size}px`;
                 confetti.style.height = `${size}px`;
                 confetti.style.backgroundColor = color;
-                confetti.style.left = `${Math.random() * 100}vw`;
+                confetti.style.left = `${xPos}px`;
                 confetti.style.top = `-30px`;
-                confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
-                confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                
+                if (shape === 'circle') {
+                    confetti.style.borderRadius = '50%';
+                } else if (shape === 'triangle') {
+                    confetti.style.width = '0';
+                    confetti.style.height = '0';
+                    confetti.style.borderLeft = `${size/2}px solid transparent`;
+                    confetti.style.borderRight = `${size/2}px solid transparent`;
+                    confetti.style.borderBottom = `${size}px solid ${color}`;
+                    confetti.style.backgroundColor = 'transparent';
+                }
+                
+                // Random animation duration (2-5s)
+                const duration = 2 + Math.random() * 3;
+                confetti.style.animation = `fall ${duration}s linear forwards`;
                 
                 document.body.appendChild(confetti);
                 
-                // Start falling animation
-                setTimeout(() => {
-                    confetti.style.opacity = '1';
-                }, Math.random() * 1000);
-                
                 // Remove after animation
-                setTimeout(() => confetti.remove(), 4000);
+                setTimeout(() => confetti.remove(), duration * 1000);
             }
         }
     </script>
 </body>
-    </html>
+</html>
