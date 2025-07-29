@@ -37,13 +37,14 @@
             font-size: 24px;
             border-radius: 50px;
             cursor: pointer;
-            box-shadow: 0 6px 15px rgba(255,107,107,0.4);
+            box-shadow: 0 6px 20px rgba(255,107,107,0.5);
             font-weight: bold;
             position: relative;
             z-index: 3;
             margin-top: 20px;
             animation: pulse 1.5s infinite;
-            transition: all 0.3s;
+            transform: scale(1);
+            transition: transform 0.3s, box-shadow 0.3s;
         }
         
         @keyframes pulse {
@@ -72,7 +73,7 @@
             max-width: 90%;
             max-height: 60%;
             border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
         
         .final-caption {
@@ -92,22 +93,55 @@
         
         .sparkle {
             position: absolute;
-            width: 20px;
-            height: 20px;
+            width: 10px;
+            height: 10px;
             background: white;
             border-radius: 50%;
             pointer-events: none;
             opacity: 0;
             box-shadow: 0 0 10px 5px white;
+            transform: scale(0);
+            transition: all 0.5s;
         }
         
         .confetti {
             position: fixed;
-            width: 10px;
-            height: 10px;
+            width: 12px;
+            height: 12px;
             background-color: #f00;
             opacity: 0;
             z-index: 5;
+            transform: translateY(-100vh);
+        }
+        
+        .big-pop {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 70%);
+            transform: translate(-50%, -50%) scale(0);
+            opacity: 0;
+            z-index: 8;
+            border-radius: 50%;
+            transition: transform 0.5s, opacity 0.5s;
+        }
+        
+        .music-control {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 100;
+            background: white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            cursor: pointer;
         }
     </style>
 </head>
@@ -125,32 +159,77 @@
     
     <audio id="bgMusic" loop>
         <source src="the-ronettes-be-my-baby.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
     </audio>
+    
+    <div class="music-control" id="musicControl">♪</div>
 
     <script>
         let clickCount = 0;
         const loveButton = document.getElementById('loveButton');
         const finalGif = document.getElementById('finalGif');
         const bgMusic = document.getElementById('bgMusic');
+        const musicControl = document.getElementById('musicControl');
         const container = document.querySelector('.container');
+        let musicStarted = false;
+        
+        // Music control button
+        musicControl.addEventListener('click', function() {
+            if (bgMusic.paused) {
+                bgMusic.play();
+                musicControl.textContent = '♫';
+            } else {
+                bgMusic.pause();
+                musicControl.textContent = '♪';
+            }
+        });
         
         // Start music on first interaction
-        document.body.addEventListener('click', function() {
-            bgMusic.play().catch(e => console.log("Audio play failed:", e));
-        }, { once: true });
+        document.body.addEventListener('click', function initMusic() {
+            if (!musicStarted) {
+                bgMusic.play().then(() => {
+                    musicStarted = true;
+                    musicControl.textContent = '♫';
+                }).catch(e => {
+                    console.log("Audio play failed:", e);
+                    musicControl.style.display = 'flex'; // Show control if autoplay fails
+                });
+                document.body.removeEventListener('click', initMusic);
+            }
+        });
         
         loveButton.addEventListener('click', function() {
-            clickCount += 10;
-            const newSize = 1 + (clickCount * 0.01);
-            this.style.transform = `scale(${newSize})`;
+            // Button press animation
+            this.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                this.style.transform = `scale(${1 + clickCount*0.02})`;
+            }, 100);
             
-            // Create sparkle effect
-            createSparkle();
+            clickCount += 10;
+            const newSize = 1 + (clickCount * 0.02);
+            
+            // Create multiple sparkles
+            for(let i = 0; i < 5; i++) {
+                setTimeout(() => createSparkle(), i * 100);
+            }
             
             if (clickCount < 100) {
                 this.textContent = `I Love You ${clickCount}x`;
+                this.style.transform = `scale(${newSize})`;
             } else {
                 this.textContent = `I Love You ♾️`;
+                this.style.transform = `scale(${newSize})`;
+                
+                // Create big pop effect
+                const pop = document.createElement('div');
+                pop.classList.add('big-pop');
+                document.body.appendChild(pop);
+                
+                setTimeout(() => {
+                    pop.style.opacity = '1';
+                    pop.style.transform = 'translate(-50%, -50%) scale(3)';
+                }, 10);
+                
                 // Create massive confetti
                 createConfetti();
                 
@@ -158,6 +237,7 @@
                 setTimeout(() => {
                     container.style.opacity = '0';
                     document.querySelector('.top-gif').style.opacity = '0';
+                    pop.style.opacity = '0';
                     setTimeout(() => {
                         finalGif.style.display = 'flex';
                         setTimeout(() => {
@@ -171,8 +251,14 @@
         function createSparkle() {
             const sparkle = document.createElement('div');
             sparkle.classList.add('sparkle');
-            sparkle.style.left = Math.random() * 100 + 'px';
-            sparkle.style.top = Math.random() * 100 + 'px';
+            
+            // Position around the button
+            const buttonRect = loveButton.getBoundingClientRect();
+            const x = buttonRect.left + Math.random() * buttonRect.width;
+            const y = buttonRect.top + Math.random() * buttonRect.height;
+            
+            sparkle.style.left = `${x}px`;
+            sparkle.style.top = `${y}px`;
             document.body.appendChild(sparkle);
             
             // Animate sparkle
@@ -181,6 +267,7 @@
                 sparkle.style.transform = 'scale(2)';
                 setTimeout(() => {
                     sparkle.style.opacity = '0';
+                    sparkle.style.transform = 'scale(0)';
                     setTimeout(() => {
                         sparkle.remove();
                     }, 1000);
@@ -189,29 +276,17 @@
         }
         
         function createConfetti() {
-            const colors = ['#ff6b6b', '#ffb8b8', '#ffdd59', '#7bed9f', '#70a1ff'];
+            const colors = ['#ff6b6b', '#ffb8b8', '#ffdd59', '#7bed9f', '#70a1ff', '#ff9ff3'];
+            const shapes = ['circle', 'square', 'triangle'];
             
-            for (let i = 0; i < 150; i++) {
+            for (let i = 0; i < 200; i++) {
                 const confetti = document.createElement('div');
                 confetti.classList.add('confetti');
-                confetti.style.left = Math.random() * 100 + 'vw';
-                confetti.style.top = '-10px';
-                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
-                document.body.appendChild(confetti);
                 
-                // Animate confetti
-                setTimeout(() => {
-                    confetti.style.opacity = '1';
-                    confetti.style.top = '100vh';
-                    confetti.style.transition = `top ${3 + Math.random() * 3}s linear`;
-                    
-                    setTimeout(() => {
-                        confetti.remove();
-                    }, 5000);
-                }, Math.random() * 1000);
-            }
-        }
-    </script>
-</body>
-</html>
+                // Random properties
+                const size = 5 + Math.random() * 10;
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                const shape = shapes[Math.floor(Math.random() * shapes.length)];
+                
+                confetti.style.width = `${size}px`;
+                confetti.style.height = `${siz
