@@ -21,12 +21,14 @@
             margin-bottom: 30px;
             border-radius: 15px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            z-index: 2;
         }
         
         .container {
             text-align: center;
             position: relative;
             transition: all 1s;
+            z-index: 1; /* Ensures button stays below sparkles */
         }
         
         .love-button {
@@ -40,10 +42,10 @@
             box-shadow: 0 6px 20px rgba(255,107,107,0.5);
             font-weight: bold;
             position: relative;
-            z-index: 3;
+            z-index: 1; /* Button stays below sparkles */
             margin-top: 20px;
             animation: pulse 1.5s infinite;
-            transform: scale(1); /* Initial scale */
+            transform: scale(1);
             transition: transform 0.3s ease-out;
         }
         
@@ -95,7 +97,7 @@
             position: absolute;
             font-size: 24px;
             pointer-events: none;
-            z-index: 5;
+            z-index: 5; /* Sparkles appear above button */
             animation: floatUp 2s ease-out forwards;
         }
         
@@ -111,7 +113,7 @@
             height: 15px;
             background-color: #f00;
             opacity: 0;
-            z-index: 5;
+            z-index: 5; /* Confetti appears above button */
             animation: fall 3s linear forwards;
         }
         
@@ -126,7 +128,7 @@
             width: 100%;
             height: 100%;
             background: rgba(255, 255, 255, 0.8);
-            z-index: 8;
+            z-index: 8; /* Flash appears above everything */
             opacity: 0;
             animation: flash 0.5s ease-out;
         }
@@ -141,7 +143,7 @@
             position: fixed;
             bottom: 20px;
             right: 20px;
-            z-index: 100;
+            z-index: 100; /* Music control always on top */
             background: white;
             border-radius: 50%;
             width: 50px;
@@ -237,7 +239,7 @@
                     sparkle.classList.add('sparkle');
                     sparkle.textContent = '✨';
                     
-                    // Position around the button
+                    // Position around the button (but above it)
                     const rect = loveButton.getBoundingClientRect();
                     sparkle.style.left = `${rect.left + 20 + Math.random() * (rect.width - 40)}px`;
                     sparkle.style.top = `${rect.top + Math.random() * rect.height}px`;
@@ -309,4 +311,4 @@
         }
     </script>
 </body>
-</html>
+    </html>
