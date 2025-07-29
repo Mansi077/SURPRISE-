@@ -18,28 +18,38 @@
         
         .top-gif {
             width: 200px;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
         
         .container {
             text-align: center;
             position: relative;
+            transition: all 1s;
         }
         
         .love-button {
-            background-color: #ff6b6b;
+            background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
             color: white;
             border: none;
-            padding: 15px 30px;
-            font-size: 18px;
+            padding: 20px 40px;
+            font-size: 24px;
             border-radius: 50px;
             cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 6px 15px rgba(255,107,107,0.4);
             font-weight: bold;
             position: relative;
             z-index: 3;
             margin-top: 20px;
+            animation: pulse 1.5s infinite;
+            transition: all 0.3s;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
         }
         
         .final-gif {
@@ -53,39 +63,51 @@
             justify-content: center;
             align-items: center;
             background-color: #ffebee;
-            z-index: 5;
+            z-index: 10;
+            opacity: 0;
+            transition: opacity 1.5s;
         }
         
         .final-gif img {
             max-width: 90%;
-            max-height: 70%;
+            max-height: 60%;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
         
         .final-caption {
-            margin-top: 20px;
-            font-size: 2rem;
+            margin-top: 30px;
+            font-size: 2.5rem;
             color: #ff6b6b;
             font-weight: bold;
-            text-shadow: 0 0 10px white;
-            animation: pulse 1.5s infinite;
+            text-shadow: 0 0 15px rgba(255,255,255,0.8);
+            animation: textPulse 2s infinite;
         }
         
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
+        @keyframes textPulse {
+            0% { transform: scale(1); opacity: 0.9; }
+            50% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.9; }
         }
         
         .sparkle {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 70%);
-            z-index: 4;
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            pointer-events: none;
             opacity: 0;
-            transition: opacity 0.5s;
+            box-shadow: 0 0 10px 5px white;
+        }
+        
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background-color: #f00;
+            opacity: 0;
+            z-index: 5;
         }
     </style>
 </head>
@@ -93,58 +115,103 @@
     <img src="711f384dff486fdbad35cdf258188b2feafaaad6.gif" class="top-gif" alt="Cute GIF">
     
     <div class="container">
-        <button id="loveButton" class="love-button">I Love You 1x</button>
+        <button id="loveButton" class="love-button">Tap Me! I Love You</button>
     </div>
     
     <div id="finalGif" class="final-gif">
         <img src="bears-hug-love-you.gif" alt="Romantic Bears Hugging">
-        <div class="final-caption">I love you so much ♾️</div>
+        <div class="final-caption">I love you so much baby ♾️</div>
     </div>
-    
-    <div class="sparkle" id="sparkle"></div>
     
     <audio id="bgMusic" loop>
         <source src="the-ronettes-be-my-baby.mp3" type="audio/mpeg">
     </audio>
 
     <script>
-        let clickCount = 1;
+        let clickCount = 0;
         const loveButton = document.getElementById('loveButton');
         const finalGif = document.getElementById('finalGif');
-        const sparkle = document.getElementById('sparkle');
         const bgMusic = document.getElementById('bgMusic');
+        const container = document.querySelector('.container');
         
         // Start music on first interaction
         document.body.addEventListener('click', function() {
-            bgMusic.play();
+            bgMusic.play().catch(e => console.log("Audio play failed:", e));
         }, { once: true });
         
         loveButton.addEventListener('click', function() {
-            clickCount += 1;
-            const newSize = 1 + (clickCount * 0.05);
+            clickCount += 10;
+            const newSize = 1 + (clickCount * 0.01);
             this.style.transform = `scale(${newSize})`;
             
-            if (clickCount < 1000) {
+            // Create sparkle effect
+            createSparkle();
+            
+            if (clickCount < 100) {
                 this.textContent = `I Love You ${clickCount}x`;
             } else {
-                this.textContent = `I Love You ∞x`;
+                this.textContent = `I Love You ♾️`;
+                // Create massive confetti
+                createConfetti();
                 
-                // Sparkle effect
-                sparkle.style.opacity = '1';
-                
-                // After 1 second, show final GIF
+                // After effects, show final GIF
                 setTimeout(() => {
-                    document.querySelector('.container').style.opacity = '0';
+                    container.style.opacity = '0';
                     document.querySelector('.top-gif').style.opacity = '0';
-                    finalGif.style.display = 'flex';
-                    
-                    // Remove sparkle after animation
                     setTimeout(() => {
-                        sparkle.style.opacity = '0';
+                        finalGif.style.display = 'flex';
+                        setTimeout(() => {
+                            finalGif.style.opacity = '1';
+                        }, 100);
                     }, 1000);
-                }, 1000);
+                }, 1500);
             }
         });
+        
+        function createSparkle() {
+            const sparkle = document.createElement('div');
+            sparkle.classList.add('sparkle');
+            sparkle.style.left = Math.random() * 100 + 'px';
+            sparkle.style.top = Math.random() * 100 + 'px';
+            document.body.appendChild(sparkle);
+            
+            // Animate sparkle
+            setTimeout(() => {
+                sparkle.style.opacity = '0.8';
+                sparkle.style.transform = 'scale(2)';
+                setTimeout(() => {
+                    sparkle.style.opacity = '0';
+                    setTimeout(() => {
+                        sparkle.remove();
+                    }, 1000);
+                }, 300);
+            }, 10);
+        }
+        
+        function createConfetti() {
+            const colors = ['#ff6b6b', '#ffb8b8', '#ffdd59', '#7bed9f', '#70a1ff'];
+            
+            for (let i = 0; i < 150; i++) {
+                const confetti = document.createElement('div');
+                confetti.classList.add('confetti');
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.top = '-10px';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                document.body.appendChild(confetti);
+                
+                // Animate confetti
+                setTimeout(() => {
+                    confetti.style.opacity = '1';
+                    confetti.style.top = '100vh';
+                    confetti.style.transition = `top ${3 + Math.random() * 3}s linear`;
+                    
+                    setTimeout(() => {
+                        confetti.remove();
+                    }, 5000);
+                }, Math.random() * 1000);
+            }
+        }
     </script>
 </body>
-  </html>
+</html>
