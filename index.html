@@ -93,39 +93,37 @@
         
         .sparkle {
             position: absolute;
-            width: 10px;
-            height: 10px;
+            width: 15px;
+            height: 15px;
             background: white;
             border-radius: 50%;
             pointer-events: none;
             opacity: 0;
-            box-shadow: 0 0 10px 5px white;
+            box-shadow: 0 0 15px 8px rgba(255,255,255,0.8);
             transform: scale(0);
             transition: all 0.5s;
+            z-index: 5;
         }
         
         .confetti {
             position: fixed;
-            width: 12px;
-            height: 12px;
+            width: 15px;
+            height: 15px;
             background-color: #f00;
             opacity: 0;
             z-index: 5;
-            transform: translateY(-100vh);
         }
         
         .big-pop {
             position: fixed;
-            top: 50%;
-            left: 50%;
-            width: 300px;
-            height: 300px;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             background: radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 70%);
-            transform: translate(-50%, -50%) scale(0);
             opacity: 0;
             z-index: 8;
-            border-radius: 50%;
-            transition: transform 0.5s, opacity 0.5s;
+            pointer-events: none;
         }
         
         .music-control {
@@ -135,14 +133,15 @@
             z-index: 100;
             background: white;
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
+            width: 50px;
+            height: 50px;
             display: flex;
             justify-content: center;
             align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            box-shadow: 0 2px 15px rgba(0,0,0,0.3);
             cursor: pointer;
-            font-size: 20px;
+            font-size: 24px;
+            color: #ff6b6b;
         }
     </style>
 </head>
@@ -150,7 +149,7 @@
     <img src="711f384dff486fdbad35cdf258188b2feafaaad6.gif" class="top-gif" alt="Cute GIF">
     
     <div class="container">
-        <button id="loveButton" class="love-button">Tap Me! I Love You</button>
+        <button id="loveButton" class="love-button">I Love You 0x</button>
     </div>
     
     <div id="finalGif" class="final-gif">
@@ -172,8 +171,8 @@
         const bgMusic = document.getElementById('bgMusic');
         const musicControl = document.getElementById('musicControl');
         
-        // Track button size separately
-        let currentButtonSize = 1;
+        // Track button size
+        let currentSize = 1;
         
         // Music control button
         musicControl.addEventListener('click', function() {
@@ -183,8 +182,8 @@
                         musicControl.textContent = '♫';
                     })
                     .catch(e => {
-                        console.log("Audio play failed:", e);
-                        alert("Please allow audio to play by tapping the music note first");
+                        console.error("Audio error:", e);
+                        alert("Please allow audio playback by tapping the music note first");
                     });
             } else {
                 bgMusic.pause();
@@ -199,44 +198,45 @@
                 bgMusic.play().catch(e => console.log("Audio play failed:", e));
             }
             
-            // Button press animation
-            this.style.transform = `scale(${currentButtonSize * 0.95})`;
-            
-            // Increment counter and calculate new size
+            // Increase click count and size
             clickCount += 10;
-            currentButtonSize = 1 + (clickCount * 0.03); // Increased growth rate
+            currentSize = 1 + (clickCount * 0.04); // 4% growth per click
             
-            // Create multiple sparkles
-            createSparkles();
+            // Update button text and size
+            if (clickCount < 100) {
+                loveButton.textContent = `I Love You ${clickCount}x`;
+            } else {
+                loveButton.textContent = `I Love You ♾️`;
+            }
             
-            // Update button text and size after slight delay
-            setTimeout(() => {
-                if (clickCount < 100) {
-                    this.textContent = `I Love You ${clickCount}x`;
-                } else {
-                    this.textContent = `I Love You ♾️`;
-                    triggerFinalEffects();
-                }
-                this.style.transform = `scale(${currentButtonSize})`;
-            }, 100);
+            // Apply size with animation
+            loveButton.style.transform = `scale(${currentSize})`;
+            
+            // Create sparkle effects
+            createSparkles(10); // 10 sparkles per click
+            
+            // If reached infinity, trigger final effects
+            if (clickCount >= 100) {
+                triggerFinalEffects();
+            }
         });
         
-        function createSparkles() {
-            for(let i = 0; i < 8; i++) {
+        function createSparkles(count) {
+            for (let i = 0; i < count; i++) {
                 setTimeout(() => {
                     const sparkle = document.createElement('div');
                     sparkle.classList.add('sparkle');
                     
                     // Position around the button
-                    const buttonRect = loveButton.getBoundingClientRect();
-                    sparkle.style.left = `${buttonRect.left + 20 + Math.random() * (buttonRect.width - 40)}px`;
-                    sparkle.style.top = `${buttonRect.top + 10 + Math.random() * (buttonRect.height - 20)}px`;
+                    const rect = loveButton.getBoundingClientRect();
+                    sparkle.style.left = `${rect.left + 20 + Math.random() * (rect.width - 40)}px`;
+                    sparkle.style.top = `${rect.top + 10 + Math.random() * (rect.height - 20)}px`;
                     
                     document.body.appendChild(sparkle);
                     
                     // Animate sparkle
                     setTimeout(() => {
-                        sparkle.style.opacity = '0.8';
+                        sparkle.style.opacity = '1';
                         sparkle.style.transform = 'scale(2)';
                         setTimeout(() => {
                             sparkle.style.opacity = '0';
@@ -248,58 +248,65 @@
         }
         
         function triggerFinalEffects() {
-            // Create big pop effect
+            // Big white flash
             const pop = document.createElement('div');
             pop.classList.add('big-pop');
             document.body.appendChild(pop);
             
             setTimeout(() => {
                 pop.style.opacity = '1';
-                pop.style.transform = 'translate(-50%, -50%) scale(3)';
+                setTimeout(() => {
+                    pop.style.opacity = '0';
+                    setTimeout(() => pop.remove(), 1000);
+                }, 300);
             }, 10);
             
-            // Create massive confetti
-            createConfetti();
+            // Confetti explosion
+            createConfetti(200); // 200 pieces
             
-            // After effects, show final GIF
+            // Fade out everything
             setTimeout(() => {
                 document.querySelector('.container').style.opacity = '0';
                 document.querySelector('.top-gif').style.opacity = '0';
-                pop.style.opacity = '0';
+                
+                // Show final GIF
                 setTimeout(() => {
                     finalGif.style.display = 'flex';
-                    setTimeout(() => finalGif.style.opacity = '1', 100);
+                    setTimeout(() => {
+                        finalGif.style.opacity = '1';
+                    }, 100);
                 }, 1000);
             }, 1500);
         }
         
-        function createConfetti() {
+        function createConfetti(count) {
             const colors = ['#ff6b6b', '#ffb8b8', '#ffdd59', '#7bed9f', '#70a1ff', '#ff9ff3'];
             
-            for (let i = 0; i < 200; i++) {
+            for (let i = 0; i < count; i++) {
+                const confetti = document.createElement('div');
+                confetti.classList.add('confetti');
+                
+                // Random properties
+                const size = 8 + Math.random() * 12;
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                
+                confetti.style.width = `${size}px`;
+                confetti.style.height = `${size}px`;
+                confetti.style.backgroundColor = color;
+                confetti.style.left = `${Math.random() * 100}vw`;
+                confetti.style.top = `-30px`;
+                confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+                confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                
+                document.body.appendChild(confetti);
+                
+                // Animate falling
                 setTimeout(() => {
-                    const confetti = document.createElement('div');
-                    confetti.classList.add('confetti');
+                    confetti.style.opacity = '1';
+                    confetti.style.top = `${window.innerHeight + 30}px`;
+                    confetti.style.transition = `top ${3 + Math.random() * 3}s cubic-bezier(0.1, 0.8, 0.3, 1)`;
                     
-                    // Random properties
-                    const size = 5 + Math.random() * 10;
-                    const color = colors[Math.floor(Math.random() * colors.length)];
-                    
-                    confetti.style.width = `${size}px`;
-                    confetti.style.height = `${size}px`;
-                    confetti.style.backgroundColor = color;
-                    confetti.style.left = `${Math.random() * 100}vw`;
-                    
-                    document.body.appendChild(confetti);
-                    
-                    // Animate falling
-                    setTimeout(() => {
-                        confetti.style.opacity = '1';
-                        confetti.style.transform = `translateY(${window.innerHeight + 20}px) rotate(${Math.random() * 360}deg)`;
-                        confetti.style.transition = `all ${3 + Math.random() * 2}s cubic-bezier(0.1, 0.8, 0.3, 1)`;
-                        
-                        setTimeout(() => confetti.remove(), 5000);
-                    }, 10);
+                    setTimeout(() => confetti.remove(), 6000);
                 }, Math.random() * 1000);
             }
         }
