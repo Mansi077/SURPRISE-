@@ -1,214 +1,312 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>I Love You Kittu 💖</title>
-  <style>
-    body {
-      background-color: #fff0f5;
-      margin: 0;
-      padding: 0;
-      font-family: 'Comic Sans MS', cursive;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      height: 100vh;
-      overflow: hidden;
-    }
-
-    .top-gif {
-      margin-top: 40px;
-      width: 200px;
-      animation: float 2s ease-in-out infinite;
-    }
-
-    @keyframes float {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
-    }
-
-    .love-button {
-      margin-top: 40px;
-      font-size: 24px;
-      background: linear-gradient(45deg, #ff5e78, #ff99ac);
-      color: white;
-      border: none;
-      border-radius: 50px;
-      padding: 20px 40px;
-      cursor: pointer;
-      box-shadow: 0 0 15px #ff5e78;
-      animation: throb 1.2s infinite;
-      transition: transform 0.3s ease;
-    }
-
-    @keyframes throb {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.08); }
-    }
-
-    .sparkle {
-      position: absolute;
-      font-size: 18px;
-      color: gold;
-      pointer-events: none;
-      animation: sparkleFloat 1.5s ease-out forwards;
-    }
-
-    @keyframes sparkleFloat {
-      0% { transform: translateY(0) scale(1); opacity: 1; }
-      100% { transform: translateY(-40px) scale(0.5); opacity: 0; }
-    }
-
-    .confetti {
-      position: fixed;
-      width: 8px;
-      height: 8px;
-      background-color: #ff69b4;
-      opacity: 0.8;
-      animation: fall 3s linear forwards;
-      z-index: 2;
-      border-radius: 50%;
-    }
-
-    @keyframes fall {
-      to {
-        transform: translateY(100vh) rotate(720deg);
-        opacity: 0;
-      }
-    }
-
-    .final-gif {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background-color: rgba(0, 0, 0, 0.85);
-      z-index: 1000;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-size: 2rem;
-      text-align: center;
-    }
-
-    .final-gif img {
-      max-width: 90%;
-      max-height: 70%;
-      margin-bottom: 20px;
-      border-radius: 20px;
-    }
-
-    .music-control {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: white;
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      font-size: 24px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-      cursor: pointer;
-      z-index: 999;
-      color: #ff5e78;
-    }
-  </style>
+    <title>I Love You ♾️</title>
+    <style>
+        body {
+            background-color: #ffebee;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+            transition: all 1s;
+        }
+        
+        .top-gif {
+            width: 200px;
+            margin-bottom: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .container {
+            text-align: center;
+            position: relative;
+            transition: all 1s;
+        }
+        
+        .love-button {
+            background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+            color: white;
+            border: none;
+            padding: 20px 40px;
+            font-size: 24px;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(255,107,107,0.5);
+            font-weight: bold;
+            position: relative;
+            z-index: 3;
+            margin-top: 20px;
+            animation: pulse 1.5s infinite;
+            transform: scale(1); /* Initial scale */
+            transition: transform 0.3s ease-out;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(var(--btn-scale)); }
+            50% { transform: scale(calc(var(--btn-scale) * 1.05)); }
+            100% { transform: scale(var(--btn-scale)); }
+        }
+        
+        .final-gif {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: #ffebee;
+            z-index: 10;
+            opacity: 0;
+            transition: opacity 1.5s;
+        }
+        
+        .final-gif img {
+            max-width: 90%;
+            max-height: 60%;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        .final-caption {
+            margin-top: 30px;
+            font-size: 2.5rem;
+            color: #ff6b6b;
+            font-weight: bold;
+            text-shadow: 0 0 15px rgba(255,255,255,0.8);
+            animation: textPulse 2s infinite;
+        }
+        
+        @keyframes textPulse {
+            0% { transform: scale(1); opacity: 0.9; }
+            50% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.9; }
+        }
+        
+        .sparkle {
+            position: absolute;
+            font-size: 24px;
+            pointer-events: none;
+            z-index: 5;
+            animation: floatUp 2s ease-out forwards;
+        }
+        
+        @keyframes floatUp {
+            0% { transform: translateY(0) scale(0.5); opacity: 0; }
+            50% { transform: translateY(-20px) scale(1); opacity: 1; }
+            100% { transform: translateY(-40px) scale(0); opacity: 0; }
+        }
+        
+        .confetti {
+            position: fixed;
+            width: 15px;
+            height: 15px;
+            background-color: #f00;
+            opacity: 0;
+            z-index: 5;
+            animation: fall 3s linear forwards;
+        }
+        
+        @keyframes fall {
+            to { transform: translateY(100vh) rotate(360deg); opacity: 1; }
+        }
+        
+        .big-pop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            z-index: 8;
+            opacity: 0;
+            animation: flash 0.5s ease-out;
+        }
+        
+        @keyframes flash {
+            0% { opacity: 0; }
+            50% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+        
+        .music-control {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 100;
+            background: white;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.3);
+            cursor: pointer;
+            font-size: 24px;
+            color: #ff6b6b;
+        }
+    </style>
 </head>
 <body>
-  <!-- Top floating GIF -->
-  <img class="top-gif" src="711f384dff486fdbad35cdf258188b2feafaaad6.gif" alt="Cute Cartoon" />
+    <img src="711f384dff486fdbad35cdf258188b2feafaaad6.gif" class="top-gif" alt="Cute GIF">
+    
+    <div class="container">
+        <button id="loveButton" class="love-button" style="--btn-scale: 1">I Love You 0x</button>
+    </div>
+    
+    <div id="finalGif" class="final-gif">
+        <img src="bears-hug-love-you.gif" alt="Romantic Bears Hugging">
+        <div class="final-caption">I love you so much baby ♾️</div>
+    </div>
+    
+    <audio id="bgMusic" loop>
+        <source src="the-ronettes-be-my-baby.mp3" type="audio/mpeg">
+    </audio>
+    
+    <div class="music-control" id="musicControl">♪</div>
 
-  <!-- I Love You Button -->
-  <button class="love-button" id="loveButton">I love you 0x</button>
-
-  <!-- Final Love GIF -->
-  <div class="final-gif" id="finalGif">
-    <img src="bears-hug-love-you.gif" alt="I Love You So Much GIF" />
-    <div>I love you so much 💗</div>
-  </div>
-
-  <!-- Background Music -->
-  <audio id="bgMusic" loop>
-    <source src="the-ronettes-be-my-baby.mp3" type="audio/mpeg">
-    Your browser does not support audio.
-  </audio>
-
-  <!-- Music Toggle Button -->
-  <div class="music-control" id="musicControl">♪</div>
-
-  <script>
-    const button = document.getElementById("loveButton");
-    const finalGif = document.getElementById("finalGif");
-    const music = document.getElementById("bgMusic");
-    const musicControl = document.getElementById("musicControl");
-
-    let clicks = 0;
-    let growth = 1;
-
-    // Music toggle
-    musicControl.addEventListener("click", () => {
-      if (music.paused) {
-        music.play().then(() => musicControl.textContent = "♫");
-      } else {
-        music.pause();
-        musicControl.textContent = "♪";
-      }
-    });
-
-    // On button click
-    button.addEventListener("click", (e) => {
-      clicks += 10;
-      growth += 0.05;
-
-      if (clicks < 100) {
-        button.innerText = `I love you ${clicks}x`;
-      } else {
-        button.innerText = `I love you ♾️`;
-      }
-
-      // Scale button smoothly
-      button.style.transform = `scale(${growth})`;
-
-      // Sparkle
-      const sparkle = document.createElement("div");
-      sparkle.classList.add("sparkle");
-      sparkle.textContent = "✨";
-      const rect = button.getBoundingClientRect();
-      sparkle.style.left = rect.left + rect.width / 2 + (Math.random() * 60 - 30) + "px";
-      sparkle.style.top = rect.top + (Math.random() * 20 - 10) + "px";
-      document.body.appendChild(sparkle);
-      setTimeout(() => sparkle.remove(), 1500);
-
-      // Trigger final effects
-      if (clicks >= 100) {
-        launchConfetti(60);
-        document.querySelector(".top-gif").style.display = "none";
-        button.style.display = "none";
-        setTimeout(() => finalGif.style.display = "flex", 1000);
-      }
-    });
-
-    function launchConfetti(count) {
-      const colors = ['#ff69b4', '#ffb6c1', '#ffe4e1', '#ffc0cb', '#ff8da3'];
-      for (let i = 0; i < count; i++) {
-        const confetti = document.createElement("div");
-        confetti.classList.add("confetti");
-        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-        confetti.style.left = Math.random() * window.innerWidth + "px";
-        confetti.style.top = "-20px";
-        document.body.appendChild(confetti);
-        setTimeout(() => confetti.remove(), 3000);
-      }
-    }
-  </script>
+    <script>
+        // Initialize variables
+        let clickCount = 0;
+        const loveButton = document.getElementById('loveButton');
+        const finalGif = document.getElementById('finalGif');
+        const bgMusic = document.getElementById('bgMusic');
+        const musicControl = document.getElementById('musicControl');
+        
+        // Set initial scale
+        let currentScale = 1;
+        loveButton.style.setProperty('--btn-scale', currentScale);
+        
+        // Music control button
+        musicControl.addEventListener('click', function() {
+            if (bgMusic.paused) {
+                bgMusic.play()
+                    .then(() => {
+                        musicControl.textContent = '♫';
+                        alert("Music started! Now tap the 'I Love You' button ❤️");
+                    })
+                    .catch(e => {
+                        console.error("Audio error:", e);
+                        alert("Please allow audio playback by tapping the music note first");
+                    });
+            } else {
+                bgMusic.pause();
+                musicControl.textContent = '♪';
+            }
+        });
+        
+        // Button click handler
+        loveButton.addEventListener('click', function() {
+            // Increase click count and scale
+            clickCount += 10;
+            currentScale = 1 + (clickCount * 0.05); // 5% growth per click
+            
+            // Update button scale
+            loveButton.style.setProperty('--btn-scale', currentScale);
+            loveButton.style.transform = `scale(${currentScale})`;
+            
+            // Update button text
+            if (clickCount < 100) {
+                loveButton.textContent = `I Love You ${clickCount}x`;
+            } else {
+                loveButton.textContent = `I Love You ♾️`;
+            }
+            
+            // Create sparkle effects (✨ emoji)
+            createSparkles(8); // 8 sparkles per click
+            
+            // If reached infinity, trigger final effects
+            if (clickCount >= 100) {
+                triggerFinalEffects();
+            }
+        });
+        
+        function createSparkles(count) {
+            for (let i = 0; i < count; i++) {
+                setTimeout(() => {
+                    const sparkle = document.createElement('div');
+                    sparkle.classList.add('sparkle');
+                    sparkle.textContent = '✨';
+                    
+                    // Position around the button
+                    const rect = loveButton.getBoundingClientRect();
+                    sparkle.style.left = `${rect.left + 20 + Math.random() * (rect.width - 40)}px`;
+                    sparkle.style.top = `${rect.top + Math.random() * rect.height}px`;
+                    
+                    document.body.appendChild(sparkle);
+                    
+                    // Remove after animation
+                    setTimeout(() => sparkle.remove(), 2000);
+                }, i * 100);
+            }
+        }
+        
+        function triggerFinalEffects() {
+            // Big white flash
+            const pop = document.createElement('div');
+            pop.classList.add('big-pop');
+            document.body.appendChild(pop);
+            
+            // Remove flash after animation
+            setTimeout(() => pop.remove(), 500);
+            
+            // Confetti explosion
+            createConfetti(150); // 150 pieces
+            
+            // Fade out everything
+            setTimeout(() => {
+                document.querySelector('.container').style.opacity = '0';
+                document.querySelector('.top-gif').style.opacity = '0';
+                
+                // Show final GIF
+                setTimeout(() => {
+                    finalGif.style.display = 'flex';
+                    setTimeout(() => {
+                        finalGif.style.opacity = '1';
+                    }, 100);
+                }, 1000);
+            }, 1500);
+        }
+        
+        function createConfetti(count) {
+            const colors = ['#ff6b6b', '#ffb8b8', '#ffdd59', '#7bed9f', '#70a1ff', '#ff9ff3'];
+            
+            for (let i = 0; i < count; i++) {
+                const confetti = document.createElement('div');
+                confetti.classList.add('confetti');
+                
+                // Random properties
+                const size = 8 + Math.random() * 12;
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                
+                confetti.style.width = `${size}px`;
+                confetti.style.height = `${size}px`;
+                confetti.style.backgroundColor = color;
+                confetti.style.left = `${Math.random() * 100}vw`;
+                confetti.style.top = `-30px`;
+                confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+                confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                
+                document.body.appendChild(confetti);
+                
+                // Start falling animation
+                setTimeout(() => {
+                    confetti.style.opacity = '1';
+                }, Math.random() * 1000);
+                
+                // Remove after animation
+                setTimeout(() => confetti.remove(), 4000);
+            }
+        }
+    </script>
 </body>
 </html>
