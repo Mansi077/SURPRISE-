@@ -189,21 +189,52 @@
         loveButton.style.setProperty('--btn-scale', currentScale);
         
         // Music control button
-        musicControl.addEventListener('click', function() {
-            if (bgMusic.paused) {
-                bgMusic.play()
-                    .then(() => {
-                        musicControl.textContent = '♫';
-                    })
-                    .catch(e => {
-                        console.error("Audio error:", e);
-                        alert("Please allow audio playback by tapping the music note first");
-                    });
-            } else {
-                bgMusic.pause();
-                musicControl.textContent = '♪';
-            }
+musicControl.addEventListener('click', function() {
+    bgMusic.play()
+        .then(() => {
+            musicControl.textContent = '♫';
+            loveButton.style.pointerEvents = 'auto';
+        })
+        .catch(e => {
+            console.error("Audio error:", e);
+            showMusicOverlay();
         });
+});
+
+function showMusicOverlay() {
+    const overlay = document.createElement('div');
+    overlay.style.position = 'fixed';
+    overlay.style.top = '0';
+    overlay.style.left = '0';
+    overlay.style.width = '100%';
+    overlay.style.height = '100%';
+    overlay.style.background = 'rgba(0,0,0,0.7)';
+    overlay.style.zIndex = '1000';
+    overlay.style.display = 'flex';
+    overlay.style.justifyContent = 'center';
+    overlay.style.alignItems = 'center';
+    
+    const playBtn = document.createElement('button');
+    playBtn.textContent = '▶️ TAP TO PLAY MUSIC';
+    playBtn.style.padding = '20px 40px';
+    playBtn.style.fontSize = '24px';
+    playBtn.style.background = '#ff6b6b';
+    playBtn.style.color = 'white';
+    playBtn.style.border = 'none';
+    playBtn.style.borderRadius = '50px';
+    
+    playBtn.addEventListener('click', () => {
+        bgMusic.play()
+            .then(() => {
+                overlay.remove();
+                musicControl.textContent = '♫';
+            })
+            .catch(e => console.error(e));
+    });
+    
+    overlay.appendChild(playBtn);
+    document.body.appendChild(overlay);
+        }
         
         // Button click handler
         loveButton.addEventListener('click', function() {
