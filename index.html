@@ -15,20 +15,20 @@
             overflow: hidden;
             transition: all 1s;
         }
-        
+
         .top-gif {
             width: 200px;
             margin-bottom: 30px;
             border-radius: 15px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
-        
+
         .container {
             text-align: center;
             position: relative;
             transition: all 1s;
         }
-        
+
         .love-button {
             background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
             color: white;
@@ -46,13 +46,13 @@
             transform: scale(1);
             transition: transform 0.3s;
         }
-        
+
         @keyframes pulse {
             0% { transform: scale(1); }
             50% { transform: scale(1.05); }
             100% { transform: scale(1); }
         }
-        
+
         .final-gif {
             position: fixed;
             top: 0;
@@ -68,14 +68,14 @@
             opacity: 0;
             transition: opacity 1.5s;
         }
-        
+
         .final-gif img {
             max-width: 90%;
             max-height: 60%;
             border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
-        
+
         .final-caption {
             margin-top: 30px;
             font-size: 2.5rem;
@@ -84,13 +84,13 @@
             text-shadow: 0 0 15px rgba(255,255,255,0.8);
             animation: textPulse 2s infinite;
         }
-        
+
         @keyframes textPulse {
             0% { transform: scale(1); opacity: 0.9; }
             50% { transform: scale(1.1); opacity: 1; }
             100% { transform: scale(1); opacity: 0.9; }
         }
-        
+
         .sparkle {
             position: absolute;
             font-size: 24px;
@@ -98,13 +98,13 @@
             z-index: 5;
             animation: floatUp 2s ease-out forwards;
         }
-        
+
         @keyframes floatUp {
             0% { transform: translateY(0) scale(0.5); opacity: 0; }
             50% { transform: translateY(-20px) scale(1); opacity: 1; }
             100% { transform: translateY(-40px) scale(0); opacity: 0; }
         }
-        
+
         .confetti {
             position: fixed;
             width: 15px;
@@ -114,11 +114,11 @@
             z-index: 5;
             animation: fall 3s linear forwards;
         }
-        
+
         @keyframes fall {
             to { transform: translateY(100vh) rotate(360deg); opacity: 1; }
         }
-        
+
         .big-pop {
             position: fixed;
             top: 0;
@@ -130,13 +130,13 @@
             opacity: 0;
             animation: flash 0.5s ease-out;
         }
-        
+
         @keyframes flash {
             0% { opacity: 0; }
             50% { opacity: 1; }
             100% { opacity: 0; }
         }
-        
+
         .music-control {
             position: fixed;
             bottom: 20px;
@@ -158,114 +158,102 @@
 </head>
 <body>
     <img src="711f384dff486fdbad35cdf258188b2feafaaad6.gif" class="top-gif" alt="Cute GIF">
-    
+
     <div class="container">
         <button id="loveButton" class="love-button">I Love You 0x</button>
     </div>
-    
+
     <div id="finalGif" class="final-gif">
         <img src="bears-hug-love-you.gif" alt="Romantic Bears Hugging">
         <div class="final-caption">I love you so much baby ♾️</div>
     </div>
-    
+
     <audio id="bgMusic" loop>
         <source src="the-ronettes-be-my-baby.mp3" type="audio/mpeg">
     </audio>
-    
+
     <div class="music-control" id="musicControl">♪</div>
 
     <script>
-        // Initialize variables
         let clickCount = 0;
         const loveButton = document.getElementById('loveButton');
         const finalGif = document.getElementById('finalGif');
         const bgMusic = document.getElementById('bgMusic');
         const musicControl = document.getElementById('musicControl');
-        
-        // Track button size
         let currentSize = 1;
-        
-        // Music control button
-        musicControl.addEventListener('click', function() {
+
+        // Try to autoplay when user interacts
+        window.addEventListener('click', () => {
+            if (bgMusic.paused) {
+                bgMusic.play().catch(() => {});
+            }
+        }, { once: true });
+
+        musicControl.addEventListener('click', function () {
             if (bgMusic.paused) {
                 bgMusic.play()
                     .then(() => {
                         musicControl.textContent = '♫';
                         alert("Music started! Now tap the 'I Love You' button ❤️");
                     })
-                    .catch(e => {
-                        console.error("Audio error:", e);
-                        alert("Please allow audio playback by tapping the music note first");
+                    .catch(() => {
+                        alert("Please tap again to allow music playback.");
                     });
             } else {
                 bgMusic.pause();
                 musicControl.textContent = '♪';
             }
         });
-        
-        // Button click handler
-        loveButton.addEventListener('click', function() {
-            // Increase click count and size
+
+        loveButton.addEventListener('click', function () {
             clickCount += 10;
-            currentSize = 1 + (clickCount * 0.05); // 5% growth per click
-            
-            // Update button text and size
+            currentSize = 1 + (clickCount * 0.05);
+
             if (clickCount < 100) {
                 loveButton.textContent = `I Love You ${clickCount}x`;
             } else {
                 loveButton.textContent = `I Love You ♾️`;
             }
-            
-            // Apply size with animation
+
+            // Stop pulse animation and apply scaling
+            loveButton.style.animation = 'none';
             loveButton.style.transform = `scale(${currentSize})`;
-            
-            // Create sparkle effects (✨ emoji)
-            createSparkles(8); // 8 sparkles per click
-            
-            // If reached infinity, trigger final effects
+
+            createSparkles(8);
+
             if (clickCount >= 100) {
                 triggerFinalEffects();
             }
         });
-        
+
         function createSparkles(count) {
             for (let i = 0; i < count; i++) {
                 setTimeout(() => {
                     const sparkle = document.createElement('div');
                     sparkle.classList.add('sparkle');
                     sparkle.textContent = '✨';
-                    
-                    // Position around the button
+
                     const rect = loveButton.getBoundingClientRect();
                     sparkle.style.left = `${rect.left + 20 + Math.random() * (rect.width - 40)}px`;
                     sparkle.style.top = `${rect.top + Math.random() * rect.height}px`;
-                    
+
                     document.body.appendChild(sparkle);
-                    
-                    // Remove after animation
                     setTimeout(() => sparkle.remove(), 2000);
                 }, i * 100);
             }
         }
-        
+
         function triggerFinalEffects() {
-            // Big white flash
             const pop = document.createElement('div');
             pop.classList.add('big-pop');
             document.body.appendChild(pop);
-            
-            // Remove flash after animation
             setTimeout(() => pop.remove(), 500);
-            
-            // Confetti explosion
-            createConfetti(150); // 150 pieces
-            
-            // Fade out everything
+            createConfetti(150);
+
             setTimeout(() => {
                 document.querySelector('.container').style.opacity = '0';
                 document.querySelector('.top-gif').style.opacity = '0';
-                
-                // Show final GIF
+
                 setTimeout(() => {
                     finalGif.style.display = 'flex';
                     setTimeout(() => {
@@ -274,18 +262,14 @@
                 }, 1000);
             }, 1500);
         }
-        
+
         function createConfetti(count) {
             const colors = ['#ff6b6b', '#ffb8b8', '#ffdd59', '#7bed9f', '#70a1ff', '#ff9ff3'];
-            
             for (let i = 0; i < count; i++) {
                 const confetti = document.createElement('div');
                 confetti.classList.add('confetti');
-                
-                // Random properties
                 const size = 8 + Math.random() * 12;
                 const color = colors[Math.floor(Math.random() * colors.length)];
-                
                 confetti.style.width = `${size}px`;
                 confetti.style.height = `${size}px`;
                 confetti.style.backgroundColor = color;
@@ -293,18 +277,13 @@
                 confetti.style.top = `-30px`;
                 confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
                 confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
-                
                 document.body.appendChild(confetti);
-                
-                // Start falling animation
                 setTimeout(() => {
                     confetti.style.opacity = '1';
                 }, Math.random() * 1000);
-                
-                // Remove after animation
                 setTimeout(() => confetti.remove(), 4000);
             }
         }
     </script>
 </body>
-</html>
+    </html>
