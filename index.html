@@ -176,183 +176,129 @@
     
     <div class="music-control" id="musicControl">♪</div>
 
-    <script>
-        // Initialize variables
-        let clickCount = 0;
-        const loveButton = document.getElementById('loveButton');
-        const finalGif = document.getElementById('finalGif');
-        const bgMusic = document.getElementById('bgMusic');
-        const musicControl = document.getElementById('musicControl');
-        
-        // Set initial scale
-        let currentScale = 1;
-        loveButton.style.setProperty('--btn-scale', currentScale);
-        
-        // Music control button
-musicControl.addEventListener('click', function() {
-    bgMusic.play()
-        .then(() => {
-            musicControl.textContent = '♫';
-            loveButton.style.pointerEvents = 'auto';
-        })
-        .catch(e => {
-            console.error("Audio error:", e);
-            showMusicOverlay();
-        });
-});
+                <script>
+    const bgMusic = document.getElementById('bgMusic');
+    const musicControl = document.getElementById('musicControl');
+    const loveButton = document.getElementById('loveButton');
+    const finalGif = document.getElementById('finalGif');
 
-function showMusicOverlay() {
-    const overlay = document.createElement('div');
-    overlay.style.position = 'fixed';
-    overlay.style.top = '0';
-    overlay.style.left = '0';
-    overlay.style.width = '100%';
-    overlay.style.height = '100%';
-    overlay.style.background = 'rgba(0,0,0,0.7)';
-    overlay.style.zIndex = '1000';
-    overlay.style.display = 'flex';
-    overlay.style.justifyContent = 'center';
-    overlay.style.alignItems = 'center';
-    
-    const playBtn = document.createElement('button');
-    playBtn.textContent = '▶️ TAP TO PLAY MUSIC';
-    playBtn.style.padding = '20px 40px';
-    playBtn.style.fontSize = '24px';
-    playBtn.style.background = '#ff6b6b';
-    playBtn.style.color = 'white';
-    playBtn.style.border = 'none';
-    playBtn.style.borderRadius = '50px';
-    
-    playBtn.addEventListener('click', () => {
-        bgMusic.play()
-            .then(() => {
-                overlay.remove();
-                musicControl.textContent = '♫';
-            })
-            .catch(e => console.error(e));
-    });
-    
-    overlay.appendChild(playBtn);
-    document.body.appendChild(overlay);
-        }
-        
-        // Button click handler
-        loveButton.addEventListener('click', function() {
-            // Increase click count and scale
-            clickCount += 10;
-            currentScale = 1 + (clickCount * 0.05);
-            
-            // Update button scale
-            loveButton.style.setProperty('--btn-scale', currentScale);
-            loveButton.style.transform = `scale(${currentScale})`;
-            
-            // Update button text
-            if (clickCount < 100) {
-                loveButton.textContent = `I Love You ${clickCount}x`;
-            } else {
-                loveButton.textContent = `I Love You ♾️`;
-            }
-            
-            // Create sparkle effects
-            createSparkles(8);
-            
-            // If reached infinity, trigger final effects
-            if (clickCount >= 100) {
-                triggerFinalEffects();
-            }
+    let clickCount = 0;
+    let currentScale = 1;
+    loveButton.style.setProperty('--btn-scale', currentScale);
+
+    // Music must be started after user interaction
+    let musicStarted = false;
+    musicControl.addEventListener('click', () => {
+        bgMusic.play().then(() => {
+            musicStarted = true;
+            musicControl.textContent = '♫';
+        }).catch((e) => {
+            alert("Browser blocked autoplay. Tap again to play music.");
+            console.log(e);
         });
-        
-        function createSparkles(count) {
-            for (let i = 0; i < count; i++) {
-                setTimeout(() => {
-                    const sparkle = document.createElement('div');
-                    sparkle.classList.add('sparkle');
-                    sparkle.textContent = '✨';
-                    
-                    const rect = loveButton.getBoundingClientRect();
-                    sparkle.style.left = `${rect.left + 20 + Math.random() * (rect.width - 40)}px`;
-                    sparkle.style.top = `${rect.top + Math.random() * rect.height}px`;
-                    
-                    document.body.appendChild(sparkle);
-                    
-                    setTimeout(() => sparkle.remove(), 2000);
-                }, i * 100);
-            }
+    });
+
+    loveButton.addEventListener('click', function() {
+        // Force music start on first tap of love button too (if not already)
+        if (!musicStarted) {
+            bgMusic.play().then(() => {
+                musicStarted = true;
+                musicControl.textContent = '♫';
+            }).catch(() => {});
         }
-        
-        function triggerFinalEffects() {
-            // Big white flash
-            const pop = document.createElement('div');
-            pop.classList.add('big-pop');
-            document.body.appendChild(pop);
-            
-            setTimeout(() => pop.remove(), 500);
-            
-            // Improved confetti distribution
-            createConfetti(200); // More confetti, better spread
-            
-            // Fade out everything
+
+        // Handle click logic
+        clickCount += 10;
+        currentScale = 1 + (clickCount * 0.05);
+        loveButton.style.setProperty('--btn-scale', currentScale);
+        loveButton.style.transform = `scale(${currentScale})`;
+
+        if (clickCount < 100) {
+            loveButton.textContent = `I Love You ${clickCount}x`;
+        } else {
+            loveButton.textContent = `I Love You ♾️`;
+            triggerFinalEffects();
+        }
+
+        createSparkles(8);
+    });
+
+    function createSparkles(count) {
+        for (let i = 0; i < count; i++) {
             setTimeout(() => {
-                document.querySelector('.container').style.opacity = '0';
-                document.querySelector('.top-gif').style.opacity = '0';
-                
-                // Show final GIF
+                const sparkle = document.createElement('div');
+                sparkle.classList.add('sparkle');
+                sparkle.textContent = '✨';
+
+                const rect = loveButton.getBoundingClientRect();
+                sparkle.style.left = `${rect.left + 20 + Math.random() * (rect.width - 40)}px`;
+                sparkle.style.top = `${rect.top + Math.random() * rect.height}px`;
+
+                document.body.appendChild(sparkle);
+                setTimeout(() => sparkle.remove(), 2000);
+            }, i * 100);
+        }
+    }
+
+    function triggerFinalEffects() {
+        const pop = document.createElement('div');
+        pop.classList.add('big-pop');
+        document.body.appendChild(pop);
+        setTimeout(() => pop.remove(), 500);
+
+        createConfetti(150);
+
+        setTimeout(() => {
+            document.querySelector('.container').style.opacity = '0';
+            document.querySelector('.top-gif').style.opacity = '0';
+            setTimeout(() => {
+                finalGif.style.display = 'flex';
                 setTimeout(() => {
-                    finalGif.style.display = 'flex';
-                    setTimeout(() => {
-                        finalGif.style.opacity = '1';
-                    }, 100);
-                }, 1000);
-            }, 1500);
-        }
-        
-        function createConfetti(count) {
-            const colors = ['#ff6b6b', '#ffb8b8', '#ffdd59', '#7bed9f', '#70a1ff', '#ff9ff3'];
-            const shapes = ['circle', 'square', 'triangle'];
-            
-            // Calculate columns for even distribution
-            const columns = 10;
-            const colWidth = window.innerWidth / columns;
-            
-            for (let i = 0; i < count; i++) {
-                const confetti = document.createElement('div');
-                confetti.classList.add('confetti');
-                
-                // Distribute evenly across columns
-                const col = i % columns;
-                const xPos = col * colWidth + Math.random() * colWidth;
-                
-                const size = 8 + Math.random() * 12;
-                const color = colors[Math.floor(Math.random() * colors.length)];
-                const shape = shapes[Math.floor(Math.random() * shapes.length)];
-                
-                confetti.style.width = `${size}px`;
-                confetti.style.height = `${size}px`;
-                confetti.style.backgroundColor = color;
-                confetti.style.left = `${xPos}px`;
-                confetti.style.top = `-30px`;
-                
-                if (shape === 'circle') {
-                    confetti.style.borderRadius = '50%';
-                } else if (shape === 'triangle') {
-                    confetti.style.width = '0';
-                    confetti.style.height = '0';
-                    confetti.style.borderLeft = `${size/2}px solid transparent`;
-                    confetti.style.borderRight = `${size/2}px solid transparent`;
-                    confetti.style.borderBottom = `${size}px solid ${color}`;
-                    confetti.style.backgroundColor = 'transparent';
-                }
-                
-                // Random animation duration (2-5s)
-                const duration = 2 + Math.random() * 3;
-                confetti.style.animation = `fall ${duration}s linear forwards`;
-                
-                document.body.appendChild(confetti);
-                
-                // Remove after animation
-                setTimeout(() => confetti.remove(), duration * 1000);
+                    finalGif.style.opacity = '1';
+                }, 100);
+            }, 1000);
+        }, 1500);
+    }
+
+    function createConfetti(count) {
+        const colors = ['#ff6b6b', '#ffb8b8', '#ffdd59', '#7bed9f', '#70a1ff', '#ff9ff3'];
+        const shapes = ['circle', 'square', 'triangle'];
+        const columns = 10;
+        const colWidth = window.innerWidth / columns;
+
+        for (let i = 0; i < count; i++) {
+            const confetti = document.createElement('div');
+            confetti.classList.add('confetti');
+
+            const col = i % columns;
+            const xPos = col * colWidth + Math.random() * colWidth;
+
+            const size = 8 + Math.random() * 12;
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            const shape = shapes[Math.floor(Math.random() * shapes.length)];
+
+            confetti.style.width = `${size}px`;
+            confetti.style.height = `${size}px`;
+            confetti.style.backgroundColor = color;
+            confetti.style.left = `${xPos}px`;
+            confetti.style.top = `-30px`;
+
+            if (shape === 'circle') {
+                confetti.style.borderRadius = '50%';
+            } else if (shape === 'triangle') {
+                confetti.style.width = '0';
+                confetti.style.height = '0';
+                confetti.style.borderLeft = `${size/2}px solid transparent`;
+                confetti.style.borderRight = `${size/2}px solid transparent`;
+                confetti.style.borderBottom = `${size}px solid ${color}`;
+                confetti.style.backgroundColor = 'transparent';
             }
+
+            const duration = 2 + Math.random() * 3;
+            confetti.style.animation = `fall ${duration}s linear forwards`;
+
+            document.body.appendChild(confetti);
+            setTimeout(() => confetti.remove(), duration * 1000);
         }
-    </script>
-</body>
-</html>
+    }
+                </script>
