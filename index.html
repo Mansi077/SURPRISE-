@@ -1,11 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>I Love You ♾️ - Music Fixed!</title>
+    <title>I Love You ♾️</title>
     <style>
-        /* Original Styles Preserved */
         body {
             background-color: #ffebee;
             display: flex;
@@ -20,7 +17,7 @@
         }
         
         .top-gif {
-            width: 250px;
+            width: 250px; /* Increased size */
             margin-bottom: 30px;
             border-radius: 15px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
@@ -75,8 +72,8 @@
         }
         
         .final-gif img {
-            max-width: 95%;
-            max-height: 70%;
+            max-width: 95%; /* Larger GIF */
+            max-height: 70%; /* Larger GIF */
             border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
@@ -158,76 +155,6 @@
             cursor: pointer;
             font-size: 24px;
             color: #ff6b6b;
-            transition: all 0.3s;
-        }
-        
-        .music-control.playing {
-            background: #ff6b6b;
-            color: white;
-            box-shadow: 0 0 20px rgba(255, 107, 107, 0.7);
-            transform: scale(1.1);
-        }
-        
-        /* New Music Status Indicator */
-        .music-status {
-            position: fixed;
-            bottom: 90px;
-            right: 20px;
-            background: rgba(255, 255, 255, 0.9);
-            padding: 10px 15px;
-            border-radius: 25px;
-            font-size: 14px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            z-index: 99;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.3s;
-        }
-        
-        .music-status.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        
-        .music-status.error {
-            background: #ff6b6b;
-            color: white;
-        }
-        
-        /* Audio Waves Animation */
-        .audio-waves {
-            position: fixed;
-            bottom: 90px;
-            right: 80px;
-            display: flex;
-            align-items: flex-end;
-            height: 40px;
-            gap: 3px;
-            z-index: 99;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-        
-        .audio-waves.show {
-            opacity: 1;
-        }
-        
-        .wave {
-            width: 4px;
-            background: #ff6b6b;
-            border-radius: 2px;
-            animation: wave 1.2s infinite ease-in-out;
-        }
-        
-        .wave:nth-child(2) { animation-delay: 0.1s; height: 20px; }
-        .wave:nth-child(3) { animation-delay: 0.2s; height: 30px; }
-        .wave:nth-child(4) { animation-delay: 0.3s; height: 25px; }
-        .wave:nth-child(5) { animation-delay: 0.4s; height: 35px; }
-        .wave:nth-child(6) { animation-delay: 0.5s; height: 20px; }
-        
-        @keyframes wave {
-            0%, 100% { transform: scaleY(0.6); }
-            50% { transform: scaleY(1.2); }
         }
     </style>
 </head>
@@ -243,22 +170,11 @@
         <div class="final-caption">I love you so much baby ♾️</div>
     </div>
     
-    <audio id="bgMusic">
-        <source src="the-ronettes-be-my-baby.mp3" type="audio/mpeg">
+    <audio id="bgMusic" loop>
+        <source src="the-ronettes-be-my-baby_WuyP7L3e (mp3cut.net) (1).mp3" type="audio/mpeg">
     </audio>
     
     <div class="music-control" id="musicControl">♪</div>
-    
-    <div class="music-status" id="musicStatus">Tap to enable music</div>
-    
-    <div class="audio-waves" id="audioWaves">
-        <div class="wave"></div>
-        <div class="wave"></div>
-        <div class="wave"></div>
-        <div class="wave"></div>
-        <div class="wave"></div>
-        <div class="wave"></div>
-    </div>
 
     <script>
         // Initialize variables
@@ -267,52 +183,57 @@
         const finalGif = document.getElementById('finalGif');
         const bgMusic = document.getElementById('bgMusic');
         const musicControl = document.getElementById('musicControl');
-        const musicStatus = document.getElementById('musicStatus');
-        const audioWaves = document.getElementById('audioWaves');
         
         // Set initial scale
         let currentScale = 1;
         loveButton.style.setProperty('--btn-scale', currentScale);
         
-        // Track if music is playing
-        let isPlaying = false;
-        
         // Music control button
-        musicControl.addEventListener('click', function() {
-            if (isPlaying) {
-                // Pause music
-                bgMusic.pause();
-                musicControl.textContent = '♪';
-                musicControl.classList.remove('playing');
-                audioWaves.classList.remove('show');
-                isPlaying = false;
-                showStatus("Music paused");
-            } else {
-                // Play music
-                bgMusic.play()
-                    .then(() => {
-                        musicControl.textContent = '♫';
-                        musicControl.classList.add('playing');
-                        audioWaves.classList.add('show');
-                        isPlaying = true;
-                        showStatus("Music playing!");
-                    })
-                    .catch(error => {
-                        console.error("Audio error:", error);
-                        showStatus("Error: Could not play music", true);
-                    });
-            }
+musicControl.addEventListener('click', function() {
+    bgMusic.play()
+        .then(() => {
+            musicControl.textContent = '♫';
+            loveButton.style.pointerEvents = 'auto';
+        })
+        .catch(e => {
+            console.error("Audio error:", e);
+            showMusicOverlay();
         });
-        
-        // Show music status message
-        function showStatus(message, isError = false) {
-            musicStatus.textContent = message;
-            musicStatus.classList.toggle('error', isError);
-            musicStatus.classList.add('show');
-            
-            setTimeout(() => {
-                musicStatus.classList.remove('show');
-            }, 3000);
+});
+
+function showMusicOverlay() {
+    const overlay = document.createElement('div');
+    overlay.style.position = 'fixed';
+    overlay.style.top = '0';
+    overlay.style.left = '0';
+    overlay.style.width = '100%';
+    overlay.style.height = '100%';
+    overlay.style.background = 'rgba(0,0,0,0.7)';
+    overlay.style.zIndex = '1000';
+    overlay.style.display = 'flex';
+    overlay.style.justifyContent = 'center';
+    overlay.style.alignItems = 'center';
+    
+    const playBtn = document.createElement('button');
+    playBtn.textContent = '▶️ TAP TO PLAY MUSIC';
+    playBtn.style.padding = '20px 40px';
+    playBtn.style.fontSize = '24px';
+    playBtn.style.background = '#ff6b6b';
+    playBtn.style.color = 'white';
+    playBtn.style.border = 'none';
+    playBtn.style.borderRadius = '50px';
+    
+    playBtn.addEventListener('click', () => {
+        bgMusic.play()
+            .then(() => {
+                overlay.remove();
+                musicControl.textContent = '♫';
+            })
+            .catch(e => console.error(e));
+    });
+    
+    overlay.appendChild(playBtn);
+    document.body.appendChild(overlay);
         }
         
         // Button click handler
@@ -367,8 +288,8 @@
             
             setTimeout(() => pop.remove(), 500);
             
-            // Confetti explosion
-            createConfetti(200);
+            // Improved confetti distribution
+            createConfetti(200); // More confetti, better spread
             
             // Fade out everything
             setTimeout(() => {
@@ -432,11 +353,7 @@
                 setTimeout(() => confetti.remove(), duration * 1000);
             }
         }
-        
-        // Show initial status message
-        setTimeout(() => {
-            showStatus("Tap the music note to play background music");
-        }, 1000);
     </script>
 </body>
     </html>
+    
