@@ -44,7 +44,7 @@
             margin-top: 20px;
             animation: pulse 1.5s infinite;
             transform: scale(1);
-            transition: transform 0.3s, box-shadow 0.3s;
+            transition: transform 0.3s;
         }
         
         @keyframes pulse {
@@ -171,10 +171,8 @@
         const finalGif = document.getElementById('finalGif');
         const bgMusic = document.getElementById('bgMusic');
         const musicControl = document.getElementById('musicControl');
-        const container = document.querySelector('.container');
-        let musicStarted = false;
         
-        // Initialize button size tracking
+        // Track button size separately
         let currentButtonSize = 1;
         
         // Music control button
@@ -183,7 +181,6 @@
                 bgMusic.play()
                     .then(() => {
                         musicControl.textContent = '♫';
-                        musicStarted = true;
                     })
                     .catch(e => {
                         console.log("Audio play failed:", e);
@@ -195,18 +192,11 @@
             }
         });
         
-        // Start music on first button click if not started
+        // Button click handler
         loveButton.addEventListener('click', function() {
-            if (!musicStarted) {
-                bgMusic.play()
-                    .then(() => {
-                        musicControl.textContent = '♫';
-                        musicStarted = true;
-                    })
-                    .catch(e => {
-                        console.log("Audio play failed:", e);
-                        musicControl.style.display = 'flex';
-                    });
+            // First try to play music if not playing
+            if (bgMusic.paused) {
+                bgMusic.play().catch(e => console.log("Audio play failed:", e));
             }
             
             // Button press animation
@@ -214,122 +204,103 @@
             
             // Increment counter and calculate new size
             clickCount += 10;
-            currentButtonSize = 1 + (clickCount * 0.02);
+            currentButtonSize = 1 + (clickCount * 0.03); // Increased growth rate
             
             // Create multiple sparkles
-            for(let i = 0; i < 8; i++) {
-                setTimeout(() => createSparkle(), i * 100);
-            }
+            createSparkles();
             
-            // Update button text and size
-            if (clickCount < 100) {
-                this.textContent = `I Love You ${clickCount}x`;
-            } else {
-                this.textContent = `I Love You ♾️`;
-                
-                // Create big pop effect
-                const pop = document.createElement('div');
-                pop.classList.add('big-pop');
-                document.body.appendChild(pop);
-                
-                setTimeout(() => {
-                    pop.style.opacity = '1';
-                    pop.style.transform = 'translate(-50%, -50%) scale(3)';
-                }, 10);
-                
-                // Create massive confetti
-                createConfetti();
-                
-                // After effects, show final GIF
-                setTimeout(() => {
-                    container.style.opacity = '0';
-                    document.querySelector('.top-gif').style.opacity = '0';
-                    pop.style.opacity = '0';
-                    setTimeout(() => {
-                        finalGif.style.display = 'flex';
-                        setTimeout(() => {
-                            finalGif.style.opacity = '1';
-                        }, 100);
-                    }, 1000);
-                }, 1500);
-            }
-            
-            // Apply size change after slight delay
+            // Update button text and size after slight delay
             setTimeout(() => {
+                if (clickCount < 100) {
+                    this.textContent = `I Love You ${clickCount}x`;
+                } else {
+                    this.textContent = `I Love You ♾️`;
+                    triggerFinalEffects();
+                }
                 this.style.transform = `scale(${currentButtonSize})`;
             }, 100);
         });
         
-        function createSparkle() {
-            const sparkle = document.createElement('div');
-            sparkle.classList.add('sparkle');
-            
-            // Position around the button
-            const buttonRect = loveButton.getBoundingClientRect();
-            const x = buttonRect.left + Math.random() * buttonRect.width;
-            const y = buttonRect.top + Math.random() * buttonRect.height;
-            
-            sparkle.style.left = `${x}px`;
-            sparkle.style.top = `${y}px`;
-            document.body.appendChild(sparkle);
-            
-            // Animate sparkle
-            setTimeout(() => {
-                sparkle.style.opacity = '0.8';
-                sparkle.style.transform = 'scale(2)';
+        function createSparkles() {
+            for(let i = 0; i < 8; i++) {
                 setTimeout(() => {
-                    sparkle.style.opacity = '0';
-                    sparkle.style.transform = 'scale(0)';
+                    const sparkle = document.createElement('div');
+                    sparkle.classList.add('sparkle');
+                    
+                    // Position around the button
+                    const buttonRect = loveButton.getBoundingClientRect();
+                    sparkle.style.left = `${buttonRect.left + 20 + Math.random() * (buttonRect.width - 40)}px`;
+                    sparkle.style.top = `${buttonRect.top + 10 + Math.random() * (buttonRect.height - 20)}px`;
+                    
+                    document.body.appendChild(sparkle);
+                    
+                    // Animate sparkle
                     setTimeout(() => {
-                        sparkle.remove();
-                    }, 1000);
-                }, 300);
+                        sparkle.style.opacity = '0.8';
+                        sparkle.style.transform = 'scale(2)';
+                        setTimeout(() => {
+                            sparkle.style.opacity = '0';
+                            setTimeout(() => sparkle.remove(), 1000);
+                        }, 300);
+                    }, 10);
+                }, i * 100);
+            }
+        }
+        
+        function triggerFinalEffects() {
+            // Create big pop effect
+            const pop = document.createElement('div');
+            pop.classList.add('big-pop');
+            document.body.appendChild(pop);
+            
+            setTimeout(() => {
+                pop.style.opacity = '1';
+                pop.style.transform = 'translate(-50%, -50%) scale(3)';
             }, 10);
+            
+            // Create massive confetti
+            createConfetti();
+            
+            // After effects, show final GIF
+            setTimeout(() => {
+                document.querySelector('.container').style.opacity = '0';
+                document.querySelector('.top-gif').style.opacity = '0';
+                pop.style.opacity = '0';
+                setTimeout(() => {
+                    finalGif.style.display = 'flex';
+                    setTimeout(() => finalGif.style.opacity = '1', 100);
+                }, 1000);
+            }, 1500);
         }
         
         function createConfetti() {
             const colors = ['#ff6b6b', '#ffb8b8', '#ffdd59', '#7bed9f', '#70a1ff', '#ff9ff3'];
-            const shapes = ['circle', 'square', 'triangle'];
             
             for (let i = 0; i < 200; i++) {
-                const confetti = document.createElement('div');
-                confetti.classList.add('confetti');
-                
-                // Random properties
-                const size = 5 + Math.random() * 10;
-                const color = colors[Math.floor(Math.random() * colors.length)];
-                const shape = shapes[Math.floor(Math.random() * shapes.length)];
-                
-                confetti.style.width = `${size}px`;
-                confetti.style.height = `${size}px`;
-                confetti.style.backgroundColor = color;
-                confetti.style.left = `${Math.random() * 100}vw`;
-                
-                if (shape === 'circle') {
-                    confetti.style.borderRadius = '50%';
-                } else if (shape === 'triangle') {
-                    confetti.style.width = '0';
-                    confetti.style.height = '0';
-                    confetti.style.borderLeft = `${size/2}px solid transparent`;
-                    confetti.style.borderRight = `${size/2}px solid transparent`;
-                    confetti.style.borderBottom = `${size}px solid ${color}`;
-                    confetti.style.backgroundColor = 'transparent';
-                }
-                
-                document.body.appendChild(confetti);
-                
-                // Random delay for falling
-                const delay = Math.random() * 1000;
-                
                 setTimeout(() => {
-                    confetti.style.opacity = '1';
-                    confetti.style.transform = `translateY(${window.innerHeight + 20}px) rotate(${Math.random() * 360}deg)`;
-                    confetti.style.transition = `all ${3 + Math.random() * 2}s cubic-bezier(0.1, 0.8, 0.3, 1)`;
+                    const confetti = document.createElement('div');
+                    confetti.classList.add('confetti');
                     
+                    // Random properties
+                    const size = 5 + Math.random() * 10;
+                    const color = colors[Math.floor(Math.random() * colors.length)];
+                    
+                    confetti.style.width = `${size}px`;
+                    confetti.style.height = `${size}px`;
+                    confetti.style.backgroundColor = color;
+                    confetti.style.left = `${Math.random() * 100}vw`;
+                    
+                    document.body.appendChild(confetti);
+                    
+                    // Animate falling
                     setTimeout(() => {
-                        confetti.remove();
-                    }, 5000);
-                }, delay);
+                        confetti.style.opacity = '1';
+                        confetti.style.transform = `translateY(${window.innerHeight + 20}px) rotate(${Math.random() * 360}deg)`;
+                        confetti.style.transition = `all ${3 + Math.random() * 2}s cubic-bezier(0.1, 0.8, 0.3, 1)`;
+                        
+                        setTimeout(() => confetti.remove(), 5000);
+                    }, 10);
+                }, Math.random() * 1000);
             }
         }
     </script>
