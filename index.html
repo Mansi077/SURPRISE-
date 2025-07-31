@@ -1,15 +1,23 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>I Love You ♾️</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
-            background-color: #ffebee;
+            background: linear-gradient(135deg, #ffebee, #ffe6f2);
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
             font-family: 'Arial', sans-serif;
             overflow: hidden;
@@ -18,11 +26,12 @@
         }
         
         .top-gif {
-            width: 250px; /* Increased size */
+            width: 300px;
             margin-bottom: 30px;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
             z-index: 2;
+            border: 5px solid white;
         }
         
         .container {
@@ -30,17 +39,22 @@
             position: relative;
             transition: all 1s;
             z-index: 1;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(255, 107, 107, 0.2);
         }
         
         .love-button {
             background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
             color: white;
             border: none;
-            padding: 20px 40px;
-            font-size: 24px;
+            padding: 20px 50px;
+            font-size: 28px;
             border-radius: 50px;
             cursor: pointer;
-            box-shadow: 0 6px 20px rgba(255,107,107,0.5);
+            box-shadow: 0 8px 25px rgba(255,107,107,0.5);
             font-weight: bold;
             position: relative;
             z-index: 1;
@@ -48,6 +62,8 @@
             animation: pulse 1.5s infinite;
             transform: scale(1);
             transition: transform 0.3s ease-out;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            letter-spacing: 1px;
         }
         
         @keyframes pulse {
@@ -66,26 +82,31 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            background-color: #ffebee;
+            background: linear-gradient(135deg, #ffebee, #ffe6f2);
             z-index: 10;
             opacity: 0;
             transition: opacity 1.5s;
         }
         
         .final-gif img {
-            max-width: 95%; /* Larger GIF */
-            max-height: 70%; /* Larger GIF */
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            max-width: 90%;
+            max-height: 65%;
+            border-radius: 25px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.35);
+            border: 8px solid white;
         }
         
         .final-caption {
-            margin-top: 30px;
-            font-size: 2.5rem;
+            margin-top: 35px;
+            font-size: 3rem;
             color: #ff6b6b;
             font-weight: bold;
-            text-shadow: 0 0 15px rgba(255,255,255,0.8);
+            text-shadow: 0 0 20px rgba(255,255,255,0.9);
             animation: textPulse 2s infinite;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 15px 40px;
+            border-radius: 50px;
         }
         
         @keyframes textPulse {
@@ -142,20 +163,26 @@
         
         .music-control {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
+            bottom: 25px;
+            right: 25px;
             z-index: 100;
             background: white;
             border-radius: 50%;
-            width: 50px;
-            height: 50px;
+            width: 60px;
+            height: 60px;
             display: flex;
             justify-content: center;
             align-items: center;
-            box-shadow: 0 2px 15px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
             cursor: pointer;
-            font-size: 24px;
+            font-size: 28px;
             color: #ff6b6b;
+            transition: all 0.3s;
+        }
+        
+        .music-control:hover {
+            transform: scale(1.1);
+            background: #ffebee;
         }
         
         /* Floating hearts animation */
@@ -167,7 +194,8 @@
             z-index: 0;
             opacity: 0.7;
             animation: floatHeart linear infinite;
-            text-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
+            text-shadow: 0 0 15px rgba(255, 107, 107, 0.5);
+            pointer-events: none;
         }
         
         @keyframes floatHeart {
@@ -183,10 +211,34 @@
                 opacity: 0;
             }
         }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #ff6b6b;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+            z-index: 2;
+        }
+        
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+        }
+        
+        .subtitle {
+            font-size: 1.5rem;
+            opacity: 0.9;
+        }
     </style>
 </head>
 <body>
-    <img src="https://media.giphy.com/media/3o7aD2d7hy9ktXNDP2/giphy.gif" class="top-gif" alt="Cute GIF">
+    <div class="header">
+        <h1>My Endless Love For You</h1>
+        <div class="subtitle">Click the button below to express your love ♥️</div>
+    </div>
+    
+    <img src="https://media.giphy.com/media/3o7aD2d7hy9ktXNDP2/giphy.gif" class="top-gif" alt="Cute Love GIF">
     
     <div class="container">
         <button id="loveButton" class="love-button" style="--btn-scale: 1">I Love You 0x</button>
@@ -245,9 +297,6 @@
         // Random delay to stagger appearance
         heart.style.animationDelay = `${Math.random() * 5}s`;
         
-        // Random slight horizontal movement
-        heart.style.setProperty('--x-offset', `${Math.random() * 40 - 20}px`);
-        
         document.body.appendChild(heart);
         
         // Remove heart after animation completes
@@ -259,12 +308,12 @@
     // Create hearts periodically
     function startHeartAnimation() {
         // Create initial hearts
-        for (let i = 0; i < 10; i++) {
-            setTimeout(createFloatingHeart, i * 800);
+        for (let i = 0; i < 15; i++) {
+            setTimeout(createFloatingHeart, i * 500);
         }
         
-        // Continue creating hearts every 1.5 seconds
-        setInterval(createFloatingHeart, 1500);
+        // Continue creating hearts every 1.2 seconds
+        setInterval(createFloatingHeart, 1200);
     }
 
     loveButton.addEventListener('click', function() {
