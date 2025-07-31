@@ -14,6 +14,7 @@
             font-family: 'Arial', sans-serif;
             overflow: hidden;
             transition: all 1s;
+            position: relative;
         }
         
         .top-gif {
@@ -156,27 +157,53 @@
             font-size: 24px;
             color: #ff6b6b;
         }
+        
+        /* Floating hearts animation */
+        .floating-heart {
+            position: absolute;
+            font-size: 2em;
+            color: #ff6b6b;
+            bottom: -50px;
+            z-index: 0;
+            opacity: 0.7;
+            animation: floatHeart linear infinite;
+            text-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
+        }
+        
+        @keyframes floatHeart {
+            0% {
+                transform: translateY(0) translateX(0) rotate(0deg);
+                opacity: 0.7;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(calc(-100vh - 50px)) translateX(20px) rotate(20deg);
+                opacity: 0;
+            }
+        }
     </style>
 </head>
 <body>
-    <img src="711f384dff486fdbad35cdf258188b2feafaaad6.gif" class="top-gif" alt="Cute GIF">
+    <img src="https://media.giphy.com/media/3o7aD2d7hy9ktXNDP2/giphy.gif" class="top-gif" alt="Cute GIF">
     
     <div class="container">
         <button id="loveButton" class="love-button" style="--btn-scale: 1">I Love You 0x</button>
     </div>
     
     <div id="finalGif" class="final-gif">
-        <img src="bears-hug-love-you.gif" alt="Romantic Bears Hugging">
+        <img src="https://media.giphy.com/media/l0HlPwJfF7FjFvz8c/giphy.gif" alt="Romantic Bears Hugging">
         <div class="final-caption">I love you so much baby ♾️</div>
     </div>
     
     <audio id="bgMusic" loop>
-        <source src="the-ronettes-be-my-baby_WuyP7L3e (mp3cut.net) (1).mp3" type="audio/mpeg">
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
     </audio>
     
     <div class="music-control" id="musicControl">♪</div>
 
-                <script>
+    <script>
     const bgMusic = document.getElementById('bgMusic');
     const musicControl = document.getElementById('musicControl');
     const loveButton = document.getElementById('loveButton');
@@ -197,6 +224,48 @@
             console.log(e);
         });
     });
+
+    // Create floating hearts animation
+    function createFloatingHeart() {
+        const heart = document.createElement('div');
+        heart.classList.add('floating-heart');
+        heart.innerHTML = '❤️';
+        
+        // Random position at the bottom
+        heart.style.left = `${Math.random() * 100}%`;
+        
+        // Random size between 1em and 3em
+        const size = 1 + Math.random() * 2;
+        heart.style.fontSize = `${size}em`;
+        
+        // Random animation duration (10-20 seconds)
+        const duration = 10 + Math.random() * 10;
+        heart.style.animationDuration = `${duration}s`;
+        
+        // Random delay to stagger appearance
+        heart.style.animationDelay = `${Math.random() * 5}s`;
+        
+        // Random slight horizontal movement
+        heart.style.setProperty('--x-offset', `${Math.random() * 40 - 20}px`);
+        
+        document.body.appendChild(heart);
+        
+        // Remove heart after animation completes
+        setTimeout(() => {
+            heart.remove();
+        }, duration * 1000);
+    }
+
+    // Create hearts periodically
+    function startHeartAnimation() {
+        // Create initial hearts
+        for (let i = 0; i < 10; i++) {
+            setTimeout(createFloatingHeart, i * 800);
+        }
+        
+        // Continue creating hearts every 1.5 seconds
+        setInterval(createFloatingHeart, 1500);
+    }
 
     loveButton.addEventListener('click', function() {
         // Force music start on first tap of love button too (if not already)
@@ -301,4 +370,9 @@
             setTimeout(() => confetti.remove(), duration * 1000);
         }
     }
-                </script>
+    
+    // Start the floating hearts animation when page loads
+    window.addEventListener('load', startHeartAnimation);
+    </script>
+</body>
+    </html>
